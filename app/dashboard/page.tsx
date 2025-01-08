@@ -8,5 +8,6 @@ export default async function Dashboard() {
     return redirect('/');
   } else {
     redirect('/dashboard/overview');
+    // first deploy 
   }
 }
