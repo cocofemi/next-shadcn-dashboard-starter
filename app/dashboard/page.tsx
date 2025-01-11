@@ -11,7 +11,5 @@ export default async function Dashboard() {
     return redirect('/');
   } else {
     redirect('/dashboard/overview');
-    // greg commit
-    // greg commit 2
   }
 }
