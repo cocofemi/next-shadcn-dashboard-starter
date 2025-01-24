@@ -17,7 +17,6 @@ const lato = Lato({
   weight: ['400', '700', '900'],
   display: 'swap'
 });
-// blogs
 
 export default async function RootLayout({
   children
