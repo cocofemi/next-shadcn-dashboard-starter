@@ -339,3 +339,47 @@ export const storenavItems: NavItem[] = [
     ]
   }
 ];
+
+export const steps = [
+  {
+    target: '.dashboard-overview',
+    content:
+      'This is your Dashboard — view your overall store performance here.',
+    disableBeacon: true
+  },
+  {
+    target: '.dashboard-recent-orders',
+    content: 'View recent orders from your customers'
+  },
+  {
+    target: '.dashboard-areagraph',
+    content: 'Shows your earns on a weekly/monthly basis'
+  },
+  {
+    target: '.dashboard-barchat',
+    content: 'Shows your top performing listings'
+  },
+  {
+    target: '.dashboard-piechat',
+    content: 'Shows how much fulfillments you made on your orders'
+  },
+  {
+    target: '.sidebar-icon-wallet',
+    content: 'Here you can manage and track your Orders.'
+  },
+  {
+    target: '.sidebar-icon-product',
+    content: 'Your Listings — add or manage products displayed in your store.'
+  },
+  {
+    target: '.header-notification-icon',
+    content:
+      'This bell icon shows your new orders and fulfillment notifications.'
+  },
+
+  {
+    target: '.tour-end',
+    content:
+      'Now lets start adding products, fulfilling orders and making customers happy.'
+  }
+];

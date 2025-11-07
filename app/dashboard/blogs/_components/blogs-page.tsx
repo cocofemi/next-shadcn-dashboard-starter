@@ -3,13 +3,11 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Blogs, Listing } from '@/constants/data';
+import { Blogs } from '@/constants/data';
 import BlogsTable from './blogs-tables';
 import React, { useEffect, useState } from 'react';
 import { CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
-import { getAllListing } from '@/utils/listings';
-import { getStoreListing } from '@/utils/store';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';

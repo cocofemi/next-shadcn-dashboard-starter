@@ -31,7 +31,7 @@ export const RecentOrders: React.FC<OrderProps> = ({ orders }) => {
   console.log(orders);
 
   return (
-    <div className="space-y-8">
+    <div className="dashboard-recent-orders space-y-8">
       {orders.slice(0, 4).map((item, index) => (
         <div key={index}>
           <div
