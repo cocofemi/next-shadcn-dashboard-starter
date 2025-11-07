@@ -25,11 +25,13 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart';
-import { getStoreTopProducts } from '@/utils/aggregations';
+import { getStoreTopProducts } from '@/utils/analytics';
 import { UserContext } from '@/context/UserProvider';
 import { CurrentUserContextType } from '@/@types/user';
 import { TopStoresBarGraph } from './top-stores-bar-graph';
 import { CustomTooltip } from '@/components/customTooltip';
+import { EmptyAnalyticsScreen } from '@/components/emptyAnalytics';
+import { Spinner } from '@/components/ui/spinner';
 
 export const description = 'An interactive bar chart';
 
@@ -144,6 +146,7 @@ const chartConfig = {
 export function BarGraph() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [limit, setLimit] = React.useState('5');
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>('desktop');
@@ -157,12 +160,17 @@ export function BarGraph() {
   );
 
   React.useEffect(() => {
+    setLoading(true);
     if (user?.token && user?.role === 'store') {
-      getStoreTopProducts(user?.storeId, Number(limit), user?.token).then(
-        (res) => {
+      getStoreTopProducts(user?.storeId, Number(limit), user?.token)
+        .then((res) => {
+          setLoading(false);
           setProducts(res?.data);
-        }
-      );
+        })
+        .catch((e) => {
+          console.log('Problem fetching revenue', e);
+          setLoading(false);
+        });
     }
   }, [user?.token, limit]);
 
@@ -218,32 +226,32 @@ export function BarGraph() {
               config={chartConfig}
               className="aspect-auto h-[280px] w-full"
             >
-              <BarChart data={products}>
-                <XAxis
-                  dataKey="listingName"
-                  tickFormatter={(v) => `${v.slice(0, 10)}....`}
-                />
-                <YAxis tickFormatter={(v) => `$${v.toFixed(0)}`} />
-                {/* <Tooltip
-                  formatter={(value, name, props) => {
-                    const { totalSold } = props.payload;
-                    return [
-                      `$${value}
-                    📦 Total Sold: ${totalSold}`,
-                      '💰 Revenue'
-                    ];
-                  }}
-                /> */}
-                <ChartTooltip cursor={false} content={<CustomTooltip />} />
-                <Bar dataKey="totalRevenue" fill="#0984E3" radius={2} />
-                <Bar
-                  dataKey="totalSold"
-                  name="Orders"
-                  fill="#00B894"
-                  barSize={40}
-                  radius={2}
-                />
-              </BarChart>
+              {loading ? (
+                <div className="flex h-screen items-center justify-center">
+                  <Spinner />
+                </div>
+              ) : products.length > 0 ? (
+                <BarChart data={products}>
+                  <XAxis
+                    dataKey="listingName"
+                    tickFormatter={(v) => `${v.slice(0, 10)}....`}
+                  />
+                  <YAxis tickFormatter={(v) => `$${v.toFixed(0)}`} />
+
+                  <ChartTooltip cursor={false} content={<CustomTooltip />} />
+                  <Bar dataKey="totalRevenue" fill="#0984E3" radius={2} />
+                  <Bar
+                    dataKey="totalSold"
+                    name="Orders"
+                    fill="#00B894"
+                    barSize={40}
+                    radius={2}
+                  />
+                </BarChart>
+              ) : (
+                <EmptyAnalyticsScreen />
+              )}
+
               {/* <BarChart
             accessibilityLayer
             data={chartData}

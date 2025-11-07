@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { formatPeriodLabel } from '@/utils/formatPeriodLabel';
 
-import { getStoreRevenue, getAllRevenue } from '@/utils/aggregations';
+import { getStoreRevenue, getAllRevenue } from '@/utils/analytics';
 import {
   ChartConfig,
   ChartContainer,
@@ -32,6 +32,8 @@ import { UserContext } from '@/context/UserProvider';
 import { CurrentUserContextType } from '@/@types/user';
 import { CustomTooltip } from '@/components/customTooltip';
 import React from 'react';
+import { EmptyAnalyticsScreen } from '@/components/emptyAnalytics';
+import { Spinner } from '@/components/ui/spinner';
 const chartData = [
   { month: 'January', desktop: 186, mobile: 80 },
   { month: 'February', desktop: 305, mobile: 200 },
@@ -55,6 +57,7 @@ const chartConfig = {
 export function AreaGraph() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const [storeRevenue, setStoreRevenue] = useState([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [period, setPeriod] = useState('weekly');
   const monthNames = [
     'Jan',
@@ -72,24 +75,32 @@ export function AreaGraph() {
   ];
 
   useEffect(() => {
+    setLoading(true);
     if (user?.token && user?.role === 'store') {
-      getStoreRevenue(user?.storeId, period, user?.token).then((res) => {
-        let formattedData;
-        if (period === 'monthly') {
-          formattedData = res?.data.map((item: any) => ({
-            ...item,
-            label: item.month ? monthNames[item.month - 1] : `W${item.week}` // week fallback
-          }));
-        } else {
-          formattedData = res?.data.map((item: any) => ({
-            ...item,
-            label: `Week ${item.week}`
-          }));
-        }
-        setStoreRevenue(formattedData);
-      });
-    } else {
+      getStoreRevenue(user?.storeId, period, user?.token)
+        .then((res) => {
+          let formattedData;
+          if (period === 'monthly') {
+            formattedData = res?.data.map((item: any) => ({
+              ...item,
+              label: item.month ? monthNames[item.month - 1] : `W${item.week}` // week fallback
+            }));
+          } else {
+            formattedData = res?.data.map((item: any) => ({
+              ...item,
+              label: `Week ${item.week}`
+            }));
+          }
+          setLoading(false);
+          setStoreRevenue(formattedData);
+        })
+        .catch((e) => {
+          console.log('Problem fetching revenue', e);
+          setLoading(false);
+        });
+    } else if (user?.token) {
       getAllRevenue(period, user?.token).then((res) => {
+        setLoading(false);
         setStoreRevenue(res?.data);
       });
     }
@@ -121,25 +132,33 @@ export function AreaGraph() {
           config={chartConfig}
           className="aspect-auto h-[310px] w-full"
         >
-          <AreaChart data={storeRevenue}>
-            <XAxis
-              dataKey="period"
-              tickFormatter={(value) => formatPeriodLabel(value)}
-            />
+          {loading ? (
+            <div className="flex h-screen items-center justify-center">
+              <Spinner />
+            </div>
+          ) : storeRevenue?.length > 0 ? (
+            <AreaChart data={storeRevenue}>
+              <XAxis
+                dataKey="period"
+                tickFormatter={(value) => formatPeriodLabel(value)}
+              />
 
-            <XAxis
-              dataKey={period === 'monthly' ? 'label' : 'label'}
-              tickFormatter={(v) => v}
-            />
-            <YAxis tickFormatter={(v) => `$${v.toFixed(0)}`} />
-            <ChartTooltip cursor={false} content={<CustomTooltip />} />
-            <Area
-              type="monotone"
-              dataKey="totalRevenue"
-              stroke="#00B894"
-              fill="#00B89433"
-            />
-          </AreaChart>
+              <XAxis
+                dataKey={period === 'monthly' ? 'label' : 'label'}
+                tickFormatter={(v) => v}
+              />
+              <YAxis tickFormatter={(v) => `$${v.toFixed(0)}`} />
+              <ChartTooltip cursor={false} content={<CustomTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="totalRevenue"
+                stroke="#00B894"
+                fill="#00B89433"
+              />
+            </AreaChart>
+          ) : (
+            <EmptyAnalyticsScreen />
+          )}
 
           {/* <AreaChart
             accessibilityLayer

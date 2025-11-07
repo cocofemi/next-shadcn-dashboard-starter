@@ -29,8 +29,10 @@ import {
 } from '@/components/ui/chart';
 import { UserContext } from '@/context/UserProvider';
 import { CurrentUserContextType } from '@/@types/user';
-import { getAllFulfillments, getStoreFulfillments } from '@/utils/aggregations';
+import { getAllFulfillments, getStoreFulfillments } from '@/utils/analytics';
 import { CustomTooltip } from '@/components/customTooltip';
+import { EmptyAnalyticsScreen } from '@/components/emptyAnalytics';
+import { Spinner } from '@/components/ui/spinner';
 const chartData = [
   { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
   { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
@@ -68,23 +70,32 @@ const chartConfig = {
 export function PieGraph() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const [data, setData] = React.useState<{ value: number }[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [days, setDays] = React.useState('7');
   const COLORS = ['#00B894', 'hsl(var(--chart-5))'];
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
-  }, []);
 
   React.useEffect(() => {
+    setLoading(true);
     if (user?.token && user?.role === 'store') {
-      getStoreFulfillments(user?.storeId, Number(days), user?.token).then(
-        (res) => {
+      getStoreFulfillments(user?.storeId, Number(days), user?.token)
+        .then((res) => {
+          setLoading(false);
           setData(res?.data);
-        }
-      );
-    } else {
-      getAllFulfillments(Number(days), user?.token).then((res) => {
-        setData(res?.data);
-      });
+        })
+        .catch((e) => {
+          console.log('Problem fetching revenue', e);
+          setLoading(false);
+        });
+    } else if (user?.token) {
+      getAllFulfillments(Number(days), user?.token)
+        .then((res) => {
+          setLoading(false);
+          setData(res?.data);
+        })
+        .catch((e) => {
+          console.log('Problem fetching revenue', e);
+          setLoading(false);
+        });
     }
   }, [user?.token, days]);
 
@@ -115,23 +126,32 @@ export function PieGraph() {
           config={chartConfig}
           className="mx-auto aspect-square max-h-[360px]"
         >
-          <PieChart width={250} height={250}>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              strokeWidth={5}
-              paddingAngle={5}
-              dataKey="value"
-            >
-              {data?.map((_, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <ChartTooltip cursor={false} content={<CustomTooltip />} />
-            <Legend verticalAlign="bottom" height={36} />
-          </PieChart>
+          {loading ? (
+            <div className="flex h-screen items-center justify-center">
+              <Spinner />
+            </div>
+          ) : data?.some((d) => d?.value > 0) ? (
+            <PieChart width={250} height={250}>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                strokeWidth={5}
+                paddingAngle={5}
+                dataKey="value"
+              >
+                {data?.map((_, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <ChartTooltip cursor={false} content={<CustomTooltip />} />
+              <Legend verticalAlign="bottom" height={36} />
+            </PieChart>
+          ) : (
+            <EmptyAnalyticsScreen />
+          )}
+
           {/* <PieChart>
             <ChartTooltip
               cursor={false}

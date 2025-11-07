@@ -24,7 +24,7 @@ import {
   ChartContainer,
   ChartTooltip
 } from '@/components/ui/chart';
-import { getTopStores } from '@/utils/aggregations';
+import { getTopStores } from '@/utils/analytics';
 import { UserContext } from '@/context/UserProvider';
 import { CurrentUserContextType } from '@/@types/user';
 
@@ -41,18 +41,26 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 import { CustomTooltip } from '@/components/customTooltip';
+import { Spinner } from '@/components/ui/spinner';
 
 export function TopStoresBarGraph() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const [data, setData] = React.useState([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [days, setDays] = React.useState('10');
 
   React.useEffect(() => {
+    setLoading(true);
     if (user?.token) {
-      getTopStores(Number(days), user?.token).then((res) => {
-        console.log(res?.data);
-        setData(res?.data);
-      });
+      getTopStores(Number(days), user?.token)
+        .then((res) => {
+          setLoading(false);
+          setData(res?.data);
+        })
+        .catch((e) => {
+          console.log('Problem fetching revenue', e);
+          setLoading(false);
+        });
     }
   }, [user?.token, days]);
 
@@ -84,26 +92,34 @@ export function TopStoresBarGraph() {
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
         <ChartContainer config={chartConfig}>
-          <BarChart layout="vertical" data={data}>
-            <XAxis type="number" />
-            <YAxis dataKey="storeName" type="category" width={70} />
-            <ChartTooltip cursor={false} content={<CustomTooltip />} />
-            <Legend />
-            <Bar
-              dataKey="totalRevenue"
-              name="Revenue"
-              fill="#0984E3"
-              barSize={40}
-              radius={2}
-            />
-            <Bar
-              dataKey="totalOrders"
-              name="Orders"
-              fill="#00B894"
-              barSize={40}
-              radius={2}
-            />
-          </BarChart>
+          {loading ? (
+            <div className="flex h-screen items-center justify-center">
+              <Spinner />
+            </div>
+          ) : (
+            <BarChart layout="vertical" data={data}>
+              <XAxis type="number" />
+              <YAxis dataKey="storeName" type="category" width={70} />
+              <ChartTooltip cursor={false} content={<CustomTooltip />} />
+              <Legend />
+
+              <Bar
+                dataKey="totalRevenue"
+                name="Revenue"
+                fill="#0984E3"
+                barSize={40}
+                radius={2}
+              />
+              <Bar
+                dataKey="totalOrders"
+                name="Orders"
+                fill="#00B894"
+                barSize={40}
+                radius={2}
+              />
+            </BarChart>
+          )}
+
           {/* <BarChart accessibilityLayer data={data}>
             <CartesianGrid vertical={false} />
             <XAxis

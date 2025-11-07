@@ -14,7 +14,6 @@ const monthNames = [
 ];
 
 export const CustomTooltip = ({ active, payload }: any) => {
-  console.log(payload);
   if (active && payload && payload.length) {
     const period = payload[0]?.payload?.period || ''; // e.g. "3-2025" or "45-2025"
 
