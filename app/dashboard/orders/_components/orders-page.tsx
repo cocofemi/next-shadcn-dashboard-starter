@@ -44,11 +44,9 @@ export default function OrdersPage({}: TUserListingPage) {
     setFilteredOrders(filtered);
   }, [search, orders]);
 
-  console.log('Orders:', filteredOrders);
-
   useEffect(() => {
     if (user?.token && user.role === 'store') {
-      getStoreOrders(user?.storeId, user.token).then((res) => {
+      getStoreOrders(user?.storeId, user.token, page, limit).then((res) => {
         setOrders(res?.data);
         setFilteredOrders(res?.data);
         setTotalOrders(res?.meta.total);

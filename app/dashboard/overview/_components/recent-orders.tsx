@@ -28,6 +28,8 @@ export const RecentOrders: React.FC<OrderProps> = ({ orders }) => {
     setTotalPrice(totalPrices);
   }, [orders]); // This effect depends on `order`
 
+  console.log(orders);
+
   return (
     <div className="space-y-8">
       {orders.slice(0, 4).map((item, index) => (
@@ -42,7 +44,9 @@ export const RecentOrders: React.FC<OrderProps> = ({ orders }) => {
           >
             <Avatar className="h-9 w-9">
               <AvatarFallback className="uppercase">
-                {/* {item.userId != null ? item?.userId?.firstname.slice(0, 2) : item?.name.slice(0, 2)} */}
+                {item.userId != null
+                  ? item?.userId?.firstname.slice(0, 2)
+                  : item?.name.slice(0, 2)}
               </AvatarFallback>
             </Avatar>
             <div className="ml-4 space-y-1">

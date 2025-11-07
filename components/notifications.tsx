@@ -112,33 +112,33 @@ export function Notifications() {
     }
   }, [user?.token, user?.storeId, refresh]);
 
-  useEffect(() => {
-    if (!user?.storeId) return;
+  // useEffect(() => {
+  //   if (!user?.storeId) return;
 
-    const socket = io('https://server.mehchant.com', {
-      transports: ['websocket']
-    });
+  //   const socket = io('https://server.mehchant.com', {
+  //     transports: ['websocket']
+  //   });
 
-    socket.on('connect', () => console.log('✅ Connected to socket.io'));
-    socket.on('connect_error', (err) => console.error('❌ Socket error:', err));
+  //   socket.on('connect', () => console.log('✅ Connected to socket.io'));
+  //   socket.on('connect_error', (err) => console.error('❌ Socket error:', err));
 
-    socket.emit('register', user.storeId);
+  //   socket.emit('register', user.storeId);
 
-    socket.on(`notification:${user.storeId}`, (notification) => {
-      console.log('🔔 New notification:', notification);
+  //   socket.on(`notification:${user.storeId}`, (notification) => {
+  //     console.log('🔔 New notification:', notification);
 
-      setNotifications((prev) => [notification, ...prev]);
-      toast.success(notification.title || 'New notification', {
-        description: notification.message,
-        duration: 8000
-      });
-    });
+  //     setNotifications((prev) => [notification, ...prev]);
+  //     toast.success(notification.title || 'New notification', {
+  //       description: notification.message,
+  //       duration: 8000
+  //     });
+  //   });
 
-    const cleanup = () => {
-      socket.disconnect();
-    };
-    return cleanup;
-  }, [user?.storeId]);
+  //   const cleanup = () => {
+  //     socket.disconnect();
+  //   };
+  //   return cleanup;
+  // }, [user?.storeId]);
 
   return (
     <DropdownMenu>

@@ -70,7 +70,7 @@ export default function OverViewPage() {
 
   useEffect(() => {
     if (user?.token && user.role === 'store') {
-      getStoreOrders(user?.storeId, user.token).then((res) => {
+      getStoreOrders(user?.storeId, user.token, page, limit).then((res) => {
         setOrders(res?.data);
         setPendingOrders(res?.meta?.pending);
       });
@@ -236,7 +236,7 @@ export default function OverViewPage() {
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
               <div className="col-span-4">
-                <BarGraph />
+                <AreaGraph />
               </div>
               <Card className="col-span-4 md:col-span-3">
                 <CardHeader>
@@ -250,7 +250,7 @@ export default function OverViewPage() {
                 </CardContent>
               </Card>
               <div className="col-span-4">
-                <AreaGraph />
+                <BarGraph />
               </div>
               <div className="col-span-4 md:col-span-3">
                 <PieGraph />

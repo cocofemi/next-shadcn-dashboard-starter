@@ -65,10 +65,15 @@ export const getStoreListing = async (
   }
 };
 
-export const getStoreOrders = async (storeId: any, token: string) => {
+export const getStoreOrders = async (
+  storeId: any,
+  token: string,
+  page: number,
+  limit: number
+) => {
   try {
     const response = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/order/store/get/all?storeId=${storeId}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/order/store/get/all?storeId=${storeId}&page=${page}&limit=${limit}`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
