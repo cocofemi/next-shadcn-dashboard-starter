@@ -119,7 +119,7 @@ export function Notifications() {
       transports: ['websocket']
     });
 
-    socket.on('connect', () => console.log('✅ Connected to socket.io'));
+    socket.on('connect', () => console.log('✅Connected to socket.io'));
     socket.on('connect_error', (err) => console.error('❌ Socket error:', err));
 
     socket.emit('register', user.storeId);
