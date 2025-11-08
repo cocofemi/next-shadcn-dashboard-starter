@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-export const getAllListing = async (page: number, limit: number) => {
+export const getAllListing = async (
+  page: number,
+  limit: number,
+  search: string = ''
+) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/listing/get/all?page=${page}&limit=${limit}`,

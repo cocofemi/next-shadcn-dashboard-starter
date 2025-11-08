@@ -40,14 +40,14 @@ export default function ListingsPage({}: TUserListingPage) {
   useEffect(() => {
     if (user?.token && user?.role === 'admin') {
       setLoading(true);
-      getAllListing(page, limit)
+      getAllListing(page, limit, debouncedSearch)
         .then((res) => {
           setListings(res?.data);
           setTotalListings(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
-  }, [user, page]);
+  }, [user, page, debouncedSearch]);
 
   useEffect(() => {
     if (user?.token && user?.role === 'store') {
