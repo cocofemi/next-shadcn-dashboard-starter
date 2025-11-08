@@ -15,7 +15,8 @@ export default function ListingTable({
   limit,
   setSearch,
   setPage,
-  setLimit
+  setLimit,
+  loading
 }: {
   data: Listing[];
   totalData: number;
@@ -25,6 +26,7 @@ export default function ListingTable({
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
+  loading: boolean;
 }) {
   const {
     genderFilter,
@@ -68,6 +70,7 @@ export default function ListingTable({
         setPage={setPage}
         setLimit={setLimit}
         url="/dashboard/listings/edit"
+        loading={loading}
       />
     </div>
   );

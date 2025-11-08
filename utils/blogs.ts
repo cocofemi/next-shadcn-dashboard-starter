@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export const getBlogs = async () => {
+export const getBlogs = async (search: string = '') => {
   const response = await axios.get(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/blog/getall`
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/blog/getall?search=${encodeURIComponent(search)}`
   );
   return response.data;
 };

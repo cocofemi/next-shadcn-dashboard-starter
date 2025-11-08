@@ -1,7 +1,7 @@
 'use client';
 
 import { TrendingUp } from 'lucide-react';
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import { Area, AreaChart, XAxis, YAxis, Tooltip } from 'recharts';
 
 import {
   Card,
@@ -12,11 +12,28 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { formatPeriodLabel } from '@/utils/formatPeriodLabel';
+
+import { getStoreRevenue, getAllRevenue } from '@/utils/analytics';
+import {
   ChartConfig,
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent
+  ChartTooltip
 } from '@/components/ui/chart';
+import { useEffect, useState } from 'react';
+import { UserContext } from '@/context/UserProvider';
+import { CurrentUserContextType } from '@/@types/user';
+import { CustomTooltip } from '@/components/customTooltip';
+import React from 'react';
+import { EmptyAnalyticsScreen } from '@/components/emptyAnalytics';
+import { Spinner } from '@/components/ui/spinner';
 const chartData = [
   { month: 'January', desktop: 186, mobile: 80 },
   { month: 'February', desktop: 305, mobile: 200 },
@@ -38,22 +55,114 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function AreaGraph() {
+  const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const [storeRevenue, setStoreRevenue] = useState([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [period, setPeriod] = useState('weekly');
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+
+  useEffect(() => {
+    setLoading(true);
+    if (user?.token && user?.role === 'store') {
+      getStoreRevenue(user?.storeId, period, user?.token)
+        .then((res) => {
+          let formattedData;
+          if (period === 'monthly') {
+            formattedData = res?.data.map((item: any) => ({
+              ...item,
+              label: item.month ? monthNames[item.month - 1] : `W${item.week}` // week fallback
+            }));
+          } else {
+            formattedData = res?.data.map((item: any) => ({
+              ...item,
+              label: `Week ${item.week}`
+            }));
+          }
+          setLoading(false);
+          setStoreRevenue(formattedData);
+        })
+        .catch((e) => {
+          console.log('Problem fetching revenue', e);
+          setLoading(false);
+        });
+    } else if (user?.token) {
+      getAllRevenue(period, user?.token).then((res) => {
+        setLoading(false);
+        setStoreRevenue(res?.data);
+      });
+    }
+  }, [user?.token, period]);
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Area Chart - Stacked</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
+
+        <div className="flex justify-between">
+          <CardDescription>Showing total store revenue</CardDescription>
+          <Select onValueChange={setPeriod}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {/* <SelectLabel>Filter</SelectLabel> */}
+                <SelectItem value="weekly">Weekly</SelectItem>
+                <SelectItem value="monthly">Monthly</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[310px] w-full"
         >
-          <AreaChart
+          {loading ? (
+            <div className="flex h-screen items-center justify-center">
+              <Spinner />
+            </div>
+          ) : storeRevenue?.length > 0 ? (
+            <AreaChart data={storeRevenue}>
+              <XAxis
+                dataKey="period"
+                tickFormatter={(value) => formatPeriodLabel(value)}
+              />
+
+              <XAxis
+                dataKey={period === 'monthly' ? 'label' : 'label'}
+                tickFormatter={(v) => v}
+              />
+              <YAxis tickFormatter={(v) => `$${v.toFixed(0)}`} />
+              <ChartTooltip cursor={false} content={<CustomTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="totalRevenue"
+                stroke="#00B894"
+                fill="#00B89433"
+              />
+            </AreaChart>
+          ) : (
+            <EmptyAnalyticsScreen />
+          )}
+
+          {/* <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={storeRevenue}
             margin={{
               left: 12,
               right: 12
@@ -87,7 +196,7 @@ export function AreaGraph() {
               stroke="var(--color-desktop)"
               stackId="a"
             />
-          </AreaChart>
+          </AreaChart> */}
         </ChartContainer>
       </CardContent>
       <CardFooter>
@@ -97,7 +206,7 @@ export function AreaGraph() {
               Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
+              January - December
             </div>
           </div>
         </div>

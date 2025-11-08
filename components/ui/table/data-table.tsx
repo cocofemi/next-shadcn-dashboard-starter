@@ -33,6 +33,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useEffect } from 'react';
+import { Spinner } from '../spinner';
+import { CurrentUserContextType } from '@/@types/user';
+import { UserContext } from '@/context/UserProvider';
+import React from 'react';
 
 interface DataTableProps<
   TData extends {
@@ -52,6 +56,7 @@ interface DataTableProps<
   url?: string;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
+  loading: boolean;
 }
 
 export function DataTable<
@@ -71,8 +76,10 @@ export function DataTable<
   limit,
   url,
   setPage,
-  setLimit
+  setLimit,
+  loading
 }: DataTableProps<TData, TValue>) {
+  const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const router = useRouter();
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
@@ -148,48 +155,60 @@ export function DataTable<
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  onClick={() => {
-                    if (url) {
-                      const slug = row.original.storeName
-                        ? row.original.storeName
-                        : row.original.orderId
-                          ? row.original.orderId
-                          : row.original.firstname
-                            ? row.original.firstname
-                            : '';
-                      const query = `?id=${row.original._id}`; // Add query only if storeName is present
-                      router.push(`${url}/${slug}${query}`);
-                    }
-                  }}
-                  className="capitalize hover:cursor-pointer"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
+          {loading ? (
+            <TableBody>
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
+                <TableCell colSpan={columns.length}>
+                  <div className="flex items-center justify-center py-12">
+                    <Spinner />
+                  </div>
                 </TableCell>
               </TableRow>
-            )}
-          </TableBody>
+            </TableBody>
+          ) : (
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    onClick={() => {
+                      if (url) {
+                        const slug = row.original.storeName
+                          ? row.original.storeName
+                          : row.original.orderId
+                            ? row.original.orderId
+                            : row.original.firstname
+                              ? row.original.firstname
+                              : '';
+                        const query = `?id=${row.original._id}`; // Add query only if storeName is present
+                        router.push(`${url}/${slug}${query}`);
+                      }
+                    }}
+                    className="capitalize hover:cursor-pointer"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          )}
         </Table>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>

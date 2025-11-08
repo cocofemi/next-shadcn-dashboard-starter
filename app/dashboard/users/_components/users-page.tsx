@@ -3,25 +3,20 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Blogs } from '@/constants/data';
-import BlogsTable from './blogs-tables';
+import { Users } from '@/constants/data';
 import React, { useEffect, useState } from 'react';
+import { getAllUsers } from '@/utils/user';
 import { CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
-import { getBlogs } from '@/utils/blogs';
+import UsersTable from './users-tables';
 
 type TUserListingPage = {};
 
-export default function BlogsPage({}: TUserListingPage) {
+export default function UsersPage({}: TUserListingPage) {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
 
-  const [totalBlogs, setTotalBlogs] = useState<number>(0);
-
-  const [blogs, setBlogs] = useState<Blogs[]>([]);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [users, setUsers] = useState<Users[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(search);
@@ -40,31 +35,32 @@ export default function BlogsPage({}: TUserListingPage) {
   useEffect(() => {
     if (user?.token) {
       setLoading(true);
-      getBlogs(debouncedSearch)
+      getAllUsers(page, user?.token, limit, debouncedSearch)
         .then((res) => {
-          setBlogs(res?.blogs);
-          setTotalBlogs(res?.meta.total);
+          setUsers(res?.users);
+          setTotalUsers(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
-  }, [page, debouncedSearch]);
+  }, [user, page, debouncedSearch]);
 
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title={`Blogs (${totalBlogs})`} description="" />
-          <Link
-            href={'/dashboard/blogs/create'}
+          <Heading title={`Users (${totalUsers})`} description="" />
+
+          {/* <Link
+            href={'/dashboard/employee/new'}
             className={cn(buttonVariants({ variant: 'default' }))}
           >
-            <Plus className="mr-2 h-4 w-4" /> New Blog
-          </Link>
+            <Plus className="mr-2 h-4 w-4" /> Add New
+          </Link> */}
         </div>
         <Separator />
-        <BlogsTable
-          data={blogs}
-          totalData={totalBlogs}
+        <UsersTable
+          data={users}
+          totalData={totalUsers}
           search={search}
           setSearch={setSearch}
           page={page}

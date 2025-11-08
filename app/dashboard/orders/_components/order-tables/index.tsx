@@ -15,7 +15,8 @@ export default function OrdersTable({
   limit,
   setSearch,
   setPage,
-  setLimit
+  setLimit,
+  loading
 }: {
   data: Orders[];
   totalData: number;
@@ -25,10 +26,9 @@ export default function OrdersTable({
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
+  loading: boolean;
 }) {
   const {
-    genderFilter,
-    setGenderFilter,
     isAnyFilterActive,
     resetFilters,
     searchQuery,
@@ -68,6 +68,7 @@ export default function OrdersTable({
         setPage={setPage}
         setLimit={setLimit}
         url="/dashboard/orders"
+        loading={loading}
       />
     </div>
   );

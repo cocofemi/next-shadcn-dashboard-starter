@@ -15,7 +15,8 @@ export default function StoreTable({
   limit,
   setSearch,
   setPage,
-  setLimit
+  setLimit,
+  loading
 }: {
   data: Listing[];
   totalData: number;
@@ -25,6 +26,7 @@ export default function StoreTable({
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
+  loading: boolean;
 }) {
   const {
     genderFilter,
@@ -67,6 +69,7 @@ export default function StoreTable({
         limit={limit}
         setPage={setPage}
         setLimit={setLimit}
+        loading={loading}
         //url="/dashboard/stores"
       />
     </div>

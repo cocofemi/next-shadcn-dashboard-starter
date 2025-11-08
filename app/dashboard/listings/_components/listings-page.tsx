@@ -22,38 +22,44 @@ export default function ListingsPage({}: TUserListingPage) {
 
   const [totalListings, setTotalListings] = useState<number>(0);
   const [listings, setListings] = useState<Listing[]>([]);
-  const [search, setSearch] = useState(''); // Search query
-  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
 
   useEffect(() => {
+    const timeout = setTimeout(() => setDebouncedSearch(search), 600);
+    return () => clearTimeout(timeout);
+  }, [search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  useEffect(() => {
     if (user?.token && user?.role === 'admin') {
-      getAllListing(page, limit).then((res) => {
-        setListings(res?.data);
-        setFilteredListings(res?.data);
-        setTotalListings(res?.meta.total);
-      });
+      setLoading(true);
+      getAllListing(page, limit, debouncedSearch)
+        .then((res) => {
+          setListings(res?.data);
+          setTotalListings(res?.meta.total);
+        })
+        .finally(() => setLoading(false));
     }
-  }, [user, page]);
+  }, [user, page, debouncedSearch]);
 
   useEffect(() => {
     if (user?.token && user?.role === 'store') {
-      getStoreListing(user?.storeId, page, limit).then((res) => {
-        setListings(res?.data);
-        setFilteredListings(res?.data);
-        setTotalListings(res?.meta.total);
-      });
+      setLoading(true);
+      getStoreListing(user?.storeId, page, limit, debouncedSearch)
+        .then((res) => {
+          setListings(res?.data);
+          setTotalListings(res?.meta.total);
+        })
+        .finally(() => setLoading(false));
     }
-  }, [user, page]);
-
-  // Filter the data based on the search query
-  useEffect(() => {
-    const filtered = listings.filter((listing) =>
-      listing?.listingName.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredListings(filtered);
-  }, [search, listings]);
+  }, [user, page, debouncedSearch]);
 
   return (
     <PageContainer scrollable>
@@ -71,7 +77,7 @@ export default function ListingsPage({}: TUserListingPage) {
         </div>
         <Separator />
         <ListingTable
-          data={filteredListings}
+          data={listings}
           totalData={totalListings}
           search={search}
           setSearch={setSearch}
@@ -79,6 +85,7 @@ export default function ListingsPage({}: TUserListingPage) {
           limit={limit}
           setPage={setPage}
           setLimit={setLimit}
+          loading={loading}
         />
       </div>
     </PageContainer>

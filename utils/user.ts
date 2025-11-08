@@ -3,11 +3,12 @@ import axios from 'axios';
 export const getAllUsers = async (
   page: number,
   token: string,
-  limit: number
+  limit: number,
+  search: string = ''
 ) => {
   try {
     const response = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/user/getall?page=${page}&limit=${limit}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/user/getall?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`

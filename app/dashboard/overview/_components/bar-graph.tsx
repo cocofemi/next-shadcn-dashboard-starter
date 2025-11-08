@@ -1,7 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 import {
   Card,
@@ -16,6 +25,13 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart';
+import { getStoreTopProducts } from '@/utils/analytics';
+import { UserContext } from '@/context/UserProvider';
+import { CurrentUserContextType } from '@/@types/user';
+import { TopStoresBarGraph } from './top-stores-bar-graph';
+import { CustomTooltip } from '@/components/customTooltip';
+import { EmptyAnalyticsScreen } from '@/components/emptyAnalytics';
+import { Spinner } from '@/components/ui/spinner';
 
 export const description = 'An interactive bar chart';
 
@@ -128,6 +144,10 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function BarGraph() {
+  const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [limit, setLimit] = React.useState('5');
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>('desktop');
 
@@ -139,16 +159,48 @@ export function BarGraph() {
     []
   );
 
+  React.useEffect(() => {
+    setLoading(true);
+    if (user?.token && user?.role === 'store') {
+      getStoreTopProducts(user?.storeId, Number(limit), user?.token)
+        .then((res) => {
+          setLoading(false);
+          setProducts(res?.data);
+        })
+        .catch((e) => {
+          console.log('Problem fetching revenue', e);
+          setLoading(false);
+        });
+    }
+  }, [user?.token, limit]);
+
   return (
-    <Card>
-      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
-        <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Bar Chart - Interactive</CardTitle>
-          <CardDescription>
-            Showing total visitors for the last 3 months
-          </CardDescription>
-        </div>
-        <div className="flex">
+    <>
+      {user?.role === 'store' ? (
+        <Card>
+          <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
+            <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
+              <CardTitle>Bar Chart - Interactive</CardTitle>
+              <div className="flex justify-between">
+                <CardDescription>Top Products by Revenue.</CardDescription>
+                <Select onValueChange={setLimit}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {/* <SelectLabel>Filter</SelectLabel> */}
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
+                      <SelectItem value="4">4</SelectItem>
+                      <SelectItem value="5">5</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            {/* <div className="flex">
           {['desktop', 'mobile'].map((key) => {
             const chart = key as keyof typeof chartConfig;
             return (
@@ -167,14 +219,40 @@ export function BarGraph() {
               </button>
             );
           })}
-        </div>
-      </CardHeader>
-      <CardContent className="px-2 sm:p-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[280px] w-full"
-        >
-          <BarChart
+        </div> */}
+          </CardHeader>
+          <CardContent className="px-2 sm:p-6">
+            <ChartContainer
+              config={chartConfig}
+              className="aspect-auto h-[280px] w-full"
+            >
+              {loading ? (
+                <div className="flex h-screen items-center justify-center">
+                  <Spinner />
+                </div>
+              ) : products.length > 0 ? (
+                <BarChart data={products}>
+                  <XAxis
+                    dataKey="listingName"
+                    tickFormatter={(v) => `${v.slice(0, 10)}....`}
+                  />
+                  <YAxis tickFormatter={(v) => `$${v.toFixed(0)}`} />
+
+                  <ChartTooltip cursor={false} content={<CustomTooltip />} />
+                  <Bar dataKey="totalRevenue" fill="#0984E3" radius={2} />
+                  <Bar
+                    dataKey="totalSold"
+                    name="Orders"
+                    fill="#00B894"
+                    barSize={40}
+                    radius={2}
+                  />
+                </BarChart>
+              ) : (
+                <EmptyAnalyticsScreen />
+              )}
+
+              {/* <BarChart
             accessibilityLayer
             data={chartData}
             margin={{
@@ -213,9 +291,13 @@ export function BarGraph() {
               }
             />
             <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+          </BarChart> */}
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      ) : (
+        <TopStoresBarGraph />
+      )}
+    </>
   );
 }

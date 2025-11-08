@@ -70,7 +70,7 @@ export default function OverViewPage() {
 
   useEffect(() => {
     if (user?.token && user.role === 'store') {
-      getStoreOrders(user?.storeId, user.token).then((res) => {
+      getStoreOrders(user?.storeId, user.token, page, limit).then((res) => {
         setOrders(res?.data);
         setPendingOrders(res?.meta?.pending);
       });
@@ -97,7 +97,7 @@ export default function OverViewPage() {
     <PageContainer scrollable>
       <div className="space-y-2">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">
+          <h2 className="tour-end text-2xl font-bold tracking-tight">
             Hi, Welcome back 👋
           </h2>
           {/* <div className="hidden items-center space-x-2 md:flex">
@@ -113,7 +113,7 @@ export default function OverViewPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="dashboard-overview grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
@@ -235,8 +235,8 @@ export default function OverViewPage() {
               </Card>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <div className="col-span-4">
-                <BarGraph />
+              <div className="dashboard-areagraph col-span-4">
+                <AreaGraph />
               </div>
               <Card className="col-span-4 md:col-span-3">
                 <CardHeader>
@@ -249,10 +249,10 @@ export default function OverViewPage() {
                   <RecentOrders orders={orders} />
                 </CardContent>
               </Card>
-              <div className="col-span-4">
-                <AreaGraph />
+              <div className="dashboard-barchat col-span-4">
+                <BarGraph />
               </div>
-              <div className="col-span-4 md:col-span-3">
+              <div className="dashboard-piechat col-span-4 md:col-span-3">
                 <PieGraph />
               </div>
             </div>

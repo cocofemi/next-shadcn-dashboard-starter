@@ -24,7 +24,11 @@ export default function Header() {
         <div className="hidden md:flex">
           <SearchInput />
         </div>
-        {user?.role === 'store' && <Notifications />}
+        {user?.role === 'store' && (
+          <div className="header-notification-icon">
+            <Notifications />{' '}
+          </div>
+        )}
         <UserNav />
         <ThemeToggle />
       </div>

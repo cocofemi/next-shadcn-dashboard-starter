@@ -15,7 +15,8 @@ export default function BlogsTable({
   limit,
   setSearch,
   setPage,
-  setLimit
+  setLimit,
+  loading
 }: {
   data: Blogs[];
   totalData: number;
@@ -25,6 +26,7 @@ export default function BlogsTable({
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   setLimit: React.Dispatch<React.SetStateAction<number>>;
+  loading: boolean;
 }) {
   const {
     genderFilter,
@@ -68,6 +70,7 @@ export default function BlogsTable({
         setPage={setPage}
         setLimit={setLimit}
         url="/dashboard/blogs/edit"
+        loading={loading}
       />
     </div>
   );
