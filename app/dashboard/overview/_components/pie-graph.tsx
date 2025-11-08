@@ -71,7 +71,7 @@ export function PieGraph() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const [data, setData] = React.useState<{ value: number }[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [days, setDays] = React.useState('7');
+  const [days, setDays] = React.useState('30');
   const COLORS = ['#00B894', 'hsl(var(--chart-5))'];
 
   React.useEffect(() => {
