@@ -7,7 +7,7 @@ export const getAllListing = async (
 ) => {
   try {
     const response = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/listing/get/all?page=${page}&limit=${limit}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/listing/get/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
       headers: {
         'Content-Type': 'application/json'
       },
