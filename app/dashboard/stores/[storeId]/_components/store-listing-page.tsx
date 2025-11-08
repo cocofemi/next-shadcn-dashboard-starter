@@ -16,45 +16,39 @@ export default function StoreListingPage({}: TUserListingPage) {
   const id = searchParams.get('id');
 
   const [totalListings, setTotalListings] = useState<number>(0);
-  const [search, setSearch] = useState(''); // Search query
-  const [filteredListing, setFilteredListing] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [storeListing, setStoreListing] = React.useState<Listing[]>([]);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => setDebouncedSearch(search), 600);
+    return () => clearTimeout(timeout);
+  }, [search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
   React.useEffect(() => {
-    getStoreListing(id, page, limit).then((res) => {
-      console.log(res.data);
+    getStoreListing(id, page, limit, debouncedSearch).then((res) => {
       setStoreListing(res?.data);
-      setFilteredListing(res?.data);
+
       setTotalListings(res?.meta.total);
     });
-  }, [page]);
-
-  // Filter the data based on the search query
-  useEffect(() => {
-    const filtered = storeListing.filter((listing) =>
-      listing?.listingName.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredListing(filtered);
-  }, [search]);
+  }, [page, debouncedSearch]);
 
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading title={`Listings (${totalListings})`} description="" />
-
-          {/* <Link
-            href={'/dashboard/employee/new'}
-            className={cn(buttonVariants({ variant: 'default' }))}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add New
-          </Link> */}
         </div>
         <Separator />
         <StoreTable
-          data={filteredListing}
+          data={storeListing}
           totalData={totalListings}
           search={search}
           setSearch={setSearch}
@@ -62,6 +56,7 @@ export default function StoreListingPage({}: TUserListingPage) {
           limit={limit}
           setPage={setPage}
           setLimit={setLimit}
+          loading={loading}
         />
       </div>
     </PageContainer>

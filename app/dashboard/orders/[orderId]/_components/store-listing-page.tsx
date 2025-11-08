@@ -1,20 +1,12 @@
 'use client';
 
 import PageContainer from '@/components/layout/page-container';
-import { buttonVariants } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Listing, Stores } from '@/constants/data';
-import { fakeUsers } from '@/constants/mock-api';
-import { searchParamsCache } from '@/lib/searchparams';
-import { cn } from '@/lib/utils';
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
+import { Listing } from '@/constants/data';
 import StoreTable from './store-tables';
 import React, { useEffect, useState } from 'react';
-import { CurrentUserContextType } from '@/@types/user';
-import { UserContext } from '@/context/UserProvider';
-import { getAllStores, getStoreListing } from '@/utils/store';
+import { getStoreListing } from '@/utils/store';
 import { useSearchParams } from 'next/navigation';
 
 type TUserListingPage = {};
@@ -24,28 +16,31 @@ export default function StoreListingPage({}: TUserListingPage) {
   const id = searchParams.get('id');
 
   const [totalListings, setTotalListings] = useState<number>(0);
-  const [search, setSearch] = useState(''); // Search query
-  const [filteredListing, setFilteredListing] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [storeListing, setStoreListing] = React.useState<Listing[]>([]);
 
-  React.useEffect(() => {
-    getStoreListing(id, page, limit).then((res) => {
-      console.log(res.data);
-      setStoreListing(res?.data);
-      setFilteredListing(res?.data);
-      setTotalListings(res?.meta.total);
-    });
-  }, [page]);
-
-  // Filter the data based on the search query
   useEffect(() => {
-    const filtered = storeListing.filter((listing) =>
-      listing?.listingName.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredListing(filtered);
+    const timeout = setTimeout(() => setDebouncedSearch(search), 600);
+    return () => clearTimeout(timeout);
   }, [search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  React.useEffect(() => {
+    setLoading(true);
+    getStoreListing(id, page, limit, debouncedSearch)
+      .then((res) => {
+        setStoreListing(res?.data);
+        setTotalListings(res?.meta.total);
+      })
+      .finally(() => setLoading(false));
+  }, [page, debouncedSearch]);
 
   return (
     <PageContainer scrollable>
@@ -62,7 +57,7 @@ export default function StoreListingPage({}: TUserListingPage) {
         </div>
         <Separator />
         <StoreTable
-          data={filteredListing}
+          data={storeListing}
           totalData={totalListings}
           search={search}
           setSearch={setSearch}
@@ -70,6 +65,7 @@ export default function StoreListingPage({}: TUserListingPage) {
           limit={limit}
           setPage={setPage}
           setLimit={setLimit}
+          loading={loading}
         />
       </div>
     </PageContainer>

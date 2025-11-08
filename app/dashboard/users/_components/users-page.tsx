@@ -3,25 +3,20 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Listing } from '@/constants/data';
-import ListingTable from './listing-tables';
+import { Users } from '@/constants/data';
 import React, { useEffect, useState } from 'react';
+import { getAllUsers } from '@/utils/user';
 import { CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
-import { getAllListing } from '@/utils/listings';
-import { getStoreListing } from '@/utils/store';
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
+import UsersTable from './users-tables';
 
 type TUserListingPage = {};
 
-export default function ListingsPage({}: TUserListingPage) {
+export default function UsersPage({}: TUserListingPage) {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
 
-  const [totalListings, setTotalListings] = useState<number>(0);
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [users, setUsers] = useState<Users[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(search);
@@ -38,24 +33,12 @@ export default function ListingsPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'admin') {
+    if (user?.token) {
       setLoading(true);
-      getAllListing(page, limit)
+      getAllUsers(page, user?.token, limit, debouncedSearch)
         .then((res) => {
-          setListings(res?.data);
-          setTotalListings(res?.meta.total);
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [user, page]);
-
-  useEffect(() => {
-    if (user?.token && user?.role === 'store') {
-      setLoading(true);
-      getStoreListing(user?.storeId, page, limit, debouncedSearch)
-        .then((res) => {
-          setListings(res?.data);
-          setTotalListings(res?.meta.total);
+          setUsers(res?.users);
+          setTotalUsers(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
@@ -65,20 +48,19 @@ export default function ListingsPage({}: TUserListingPage) {
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title={`Listings (${totalListings})`} description="" />
-          {user?.role === 'store' && (
-            <Link
-              href={'/dashboard/listings/create'}
-              className={cn(buttonVariants({ variant: 'default' }))}
-            >
-              <Plus className="mr-2 h-4 w-4" /> Add New
-            </Link>
-          )}
+          <Heading title={`Users (${totalUsers})`} description="" />
+
+          {/* <Link
+            href={'/dashboard/employee/new'}
+            className={cn(buttonVariants({ variant: 'default' }))}
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add New
+          </Link> */}
         </div>
         <Separator />
-        <ListingTable
-          data={listings}
-          totalData={totalListings}
+        <UsersTable
+          data={users}
+          totalData={totalUsers}
           search={search}
           setSearch={setSearch}
           page={page}

@@ -18,58 +18,54 @@ export default function OrdersPage({}: TUserListingPage) {
 
   const [totalOrders, setTotalOrders] = useState<number>(0);
   const [orders, setOrders] = useState<Orders[]>([]);
-  const [search, setSearch] = useState(''); // Search query
-  const [filteredOrders, setFilteredOrders] = useState<Orders[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
 
   useEffect(() => {
-    if (user?.token && user.role === 'admin') {
-      getAllOrders(page, limit, user?.token).then((res) => {
-        // console.log(res?.orders);
-        setOrders(res?.orders);
-        setFilteredOrders(res?.orders);
-        setTotalOrders(res?.meta.total);
-      });
-    }
-  }, [user, page]);
+    const timeout = setTimeout(() => setDebouncedSearch(search), 600);
+    return () => clearTimeout(timeout);
+  }, [search]);
 
-  // Filter the data based on the search query
   useEffect(() => {
-    const filtered = orders.filter(
-      (order) =>
-        order?.orderId.toLowerCase().includes(search.toLowerCase()) ||
-        order?.fulfilled.toString().toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredOrders(filtered);
-  }, [search, orders]);
+    setPage(1);
+  }, [search]);
+
+  useEffect(() => {
+    if (user?.token && user.role === 'admin') {
+      setLoading(true);
+      getAllOrders(page, limit, user?.token, debouncedSearch)
+        .then((res) => {
+          setOrders(res?.orders);
+          setTotalOrders(res?.meta.total);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [user, page, debouncedSearch]);
 
   useEffect(() => {
     if (user?.token && user.role === 'store') {
-      getStoreOrders(user?.storeId, user.token, page, limit).then((res) => {
-        setOrders(res?.data);
-        setFilteredOrders(res?.data);
-        setTotalOrders(res?.meta.total);
-      });
+      setLoading(true);
+      getStoreOrders(user?.storeId, user.token, page, limit, debouncedSearch)
+        .then((res) => {
+          setOrders(res?.data);
+          setTotalOrders(res?.meta.total);
+        })
+        .finally(() => setLoading(false));
     }
-  }, [user]);
+  }, [user, page, debouncedSearch]);
 
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading title={`Orders (${totalOrders})`} description="" />
-
-          {/* <Link
-            href={'/dashboard/employee/new'}
-            className={cn(buttonVariants({ variant: 'default' }))}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add New
-          </Link> */}
         </div>
         <Separator />
         <OrdersTable
-          data={filteredOrders}
+          data={orders}
           totalData={totalOrders}
           search={search}
           setSearch={setSearch}
@@ -77,6 +73,7 @@ export default function OrdersPage({}: TUserListingPage) {
           limit={limit}
           setPage={setPage}
           setLimit={setLimit}
+          loading={loading}
         />
       </div>
     </PageContainer>

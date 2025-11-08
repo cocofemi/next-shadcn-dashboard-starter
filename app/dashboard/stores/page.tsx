@@ -1,7 +1,7 @@
 import { searchParamsCache } from '@/lib/searchparams';
 import { SearchParams } from 'nuqs/server';
 import React from 'react';
-import StoreListingPage from './_components/store-listing-page';
+import StoresViewPage from './_components/store-page';
 
 type pageProps = {
   searchParams: Promise<SearchParams>;
@@ -16,5 +16,5 @@ export default async function Page(props: pageProps) {
   // Allow nested RSCs to access the search params (in a type-safe way)
   searchParamsCache.parse(searchParams);
 
-  return <StoreListingPage />;
+  return <StoresViewPage />;
 }

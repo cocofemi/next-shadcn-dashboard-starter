@@ -28,10 +28,50 @@ export const columns: ColumnDef<Orders>[] = [
     enableSorting: false,
     enableHiding: false
   },
+
   {
     accessorKey: 'orderId',
-    header: 'ID'
+    header: 'Order ID'
   },
+
+  {
+    accessorKey: 'name',
+    header: 'NAME',
+    cell: ({ row }) => {
+      const name = row.getValue<Orders>('name');
+      //const name = row.getValue<string | null>('email');
+      return (
+        <div>
+          <p className="lowercase">{`${name}`}</p>
+        </div>
+      );
+    }
+  },
+  {
+    accessorKey: 'phoneNumber',
+    header: 'PHONE NUMBER',
+    cell: ({ row }) => {
+      const phoneNumber = row.getValue<Orders>('phoneNumber');
+      return (
+        <div>
+          <p className="lowercase">{`${phoneNumber}`}</p>
+        </div>
+      );
+    }
+  },
+  {
+    accessorKey: 'email',
+    header: 'EMAIL',
+    cell: ({ row }) => {
+      const email = row.getValue<Orders>('email');
+      return (
+        <div>
+          <p className="lowercase">{`${email}`}</p>
+        </div>
+      );
+    }
+  },
+
   {
     accessorKey: 'createdAt',
     header: 'DATE',
@@ -46,35 +86,7 @@ export const columns: ColumnDef<Orders>[] = [
       );
     }
   },
-  // {
-  //   accessorKey: 'storeId',
-  //   header: 'STORE',
-  //   cell: ({ row }) => {
-  //     const storeName = row.getValue<Store>('storeId');
-  //     return (
-  //       <div>
-  //         <p>{`${storeName.storeName}`}</p>
-  //       </div>
-  //     );
-  //   }
-  // },
-  {
-    accessorKey: 'userId',
-    header: 'CUSTOMER',
-    cell: ({ row }) => {
-      const customer = row.getValue<UserId | null>('userId');
-      //const name = row.getValue<string | null>('email');
-      return (
-        <div>
-          {customer ? (
-            <p>{`${customer.firstname} ${customer.lastname}`}</p> // Safely access the firstname and lastname
-          ) : (
-            <p>Guest Checkout</p> // Fallback in case the customer object is null or undefined
-          )}
-        </div>
-      );
-    }
-  },
+
   {
     accessorKey: 'fulfilled',
     header: 'SHIPPED',
@@ -85,11 +97,11 @@ export const columns: ColumnDef<Orders>[] = [
         <div>
           {fulfilled?.fulfilled === true ? (
             <span className="me-2 rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
-              Shipped
+              True
             </span>
           ) : (
             <span className="me-2 rounded bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
-              Not Shipped
+              False
             </span>
           )}
         </div>

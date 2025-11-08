@@ -28,8 +28,6 @@ export const RecentOrders: React.FC<OrderProps> = ({ orders }) => {
     setTotalPrice(totalPrices);
   }, [orders]); // This effect depends on `order`
 
-  console.log(orders);
-
   return (
     <div className="dashboard-recent-orders space-y-8">
       {orders.slice(0, 4).map((item, index) => (

@@ -138,6 +138,7 @@ export type Orders = {
   _id: string;
   name: string;
   email: string;
+  phoneNumber: string;
   orderId: string;
   item: OrderItem[];
   userId: UserId;

@@ -22,29 +22,32 @@ export default function BlogsPage({}: TUserListingPage) {
   const [totalBlogs, setTotalBlogs] = useState<number>(0);
 
   const [blogs, setBlogs] = useState<Blogs[]>([]);
-  const [search, setSearch] = useState(''); // Search query
-
-  const [filteredBlogs, setFilteredBlogs] = useState<Blogs[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
 
   useEffect(() => {
-    if (user?.token) {
-      getBlogs().then((res) => {
-        setBlogs(res?.blogs);
-        setFilteredBlogs(res?.blogs);
-        setTotalBlogs(res?.meta.total);
-      });
-    }
-  }, []);
+    const timeout = setTimeout(() => setDebouncedSearch(search), 600);
+    return () => clearTimeout(timeout);
+  }, [search]);
 
-  // Filter the data based on the search query
   useEffect(() => {
-    const filtered = blogs.filter((blog) =>
-      blog?.title.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredBlogs(filtered);
-  }, [search, blogs]);
+    setPage(1);
+  }, [search]);
+
+  useEffect(() => {
+    if (user?.token) {
+      setLoading(true);
+      getBlogs(debouncedSearch)
+        .then((res) => {
+          setBlogs(res?.blogs);
+          setTotalBlogs(res?.meta.total);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [page, debouncedSearch]);
 
   return (
     <PageContainer scrollable>
@@ -60,7 +63,7 @@ export default function BlogsPage({}: TUserListingPage) {
         </div>
         <Separator />
         <BlogsTable
-          data={filteredBlogs}
+          data={blogs}
           totalData={totalBlogs}
           search={search}
           setSearch={setSearch}
@@ -68,6 +71,7 @@ export default function BlogsPage({}: TUserListingPage) {
           limit={limit}
           setPage={setPage}
           setLimit={setLimit}
+          loading={loading}
         />
       </div>
     </PageContainer>
