@@ -3,6 +3,7 @@ import Link from 'next/link';
 import UserAuthForm from './user-auth-form';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import warehouse from '../../../public/images/ashley-28b8xlTT5t4-unsplash.jpg';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -22,8 +23,16 @@ export default function SignInViewPage() {
         Login
       </Link>
       <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-        <div className="absolute inset-0 bg-zinc-900" />
-        <div className="relative z-20 flex items-center text-lg font-medium">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url('https://img.freepik.com/premium-vector/abstract-african-art-shapes-seamless-background-tribal-geometric-decoration-pattern_454705-744.jpg')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        <div className="relative z-20 flex w-48 items-center rounded-md bg-white p-2 text-lg font-medium text-black shadow-lg">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -38,16 +47,15 @@ export default function SignInViewPage() {
           </svg>
           Mehchant Admin
         </div>
-        {/* <div className="relative z-20 mt-auto">
-          <blockquote className="space-y-2">
-            <p className="text-lg">
-              &ldquo;This library has saved me countless hours of work and
-              helped me deliver stunning designs to my clients faster than ever
-              before.&rdquo;
+        <div className="absolute inset-0 z-20 flex items-end justify-center bg-gradient-to-t from-black/70 via-black/40 to-transparent p-10">
+          <blockquote className="space-y-2 text-white">
+            <p className="text-lg font-bold italic">
+              &ldquo;You don’t have to be great to start, but you have to start
+              to be great.&rdquo;
             </p>
-            <footer className="text-sm">Sofia Davis</footer>
+            <footer className="text-sm">— Zig Ziglar</footer>
           </blockquote>
-        </div> */}
+        </div>
       </div>
       <div className="flex h-full items-center p-4 lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
