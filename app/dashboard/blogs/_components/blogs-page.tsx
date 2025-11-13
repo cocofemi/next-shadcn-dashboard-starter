@@ -3,16 +3,16 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Blogs } from '@/constants/data';
 import BlogsTable from './blogs-tables';
 import React, { useEffect, useState } from 'react';
-import { CurrentUserContextType } from '@/@types/user';
+import { Blogs, CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { getBlogs } from '@/utils/blogs';
+import { Spinner } from '@/components/ui/spinner';
 
 type TUserListingPage = {};
 

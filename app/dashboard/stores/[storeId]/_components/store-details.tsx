@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/card';
 import { getStore } from '@/utils/store';
 import { useSearchParams, useParams } from 'next/navigation';
+import { useState } from 'react';
+import { Spinner } from '@/components/ui/spinner';
 
 interface IStore {
   _id: string;
@@ -26,6 +28,7 @@ export default function StoreDetails() {
   const id = search.get('id');
   const params = useParams();
   const { storeId } = params;
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [store, setStore] = React.useState<IStore>({
     _id: '',
@@ -38,11 +41,24 @@ export default function StoreDetails() {
   });
 
   React.useEffect(() => {
-    getStore(storeId).then((res) => {
-      console.log(res);
-      setStore(res?.store);
-    });
+    setLoading(true);
+    getStore(storeId)
+      .then((res) => {
+        setLoading(false);
+        setStore(res?.store);
+      })
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+        <span className="ml-3 text-gray-500">Loading store profile...</span>
+      </div>
+    );
+  }
+
   return (
     <Card className="mx-auto w-full">
       <CardHeader>

@@ -3,12 +3,11 @@
 import { DataTable } from '@/components/ui/table/data-table';
 import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
-
 import { columns } from './columns';
 import { useEmployeeTableFilters } from './use-employee-table-filters';
-import { Orders } from '@/@types/user';
+import { Listing } from '@/@types/user';
 
-export default function OrdersTable({
+export default function PaymentsTable({
   data,
   totalData,
   search,
@@ -19,7 +18,7 @@ export default function OrdersTable({
   setLimit,
   loading
 }: {
-  data: Orders[];
+  data: Listing[];
   totalData: number;
   search: string;
   page: number;
@@ -30,6 +29,8 @@ export default function OrdersTable({
   loading: boolean;
 }) {
   const {
+    genderFilter,
+    setGenderFilter,
     isAnyFilterActive,
     resetFilters,
     searchQuery,
@@ -68,7 +69,7 @@ export default function OrdersTable({
         limit={limit}
         setPage={setPage}
         setLimit={setLimit}
-        url="/dashboard/orders"
+        url="/dashboard/listings/edit"
         loading={loading}
       />
     </div>

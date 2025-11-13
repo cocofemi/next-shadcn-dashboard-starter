@@ -1,5 +1,6 @@
 'use client';
-import { Blogs, UserId } from '@/constants/data';
+
+import { Blogs, UserId } from '@/@types/user';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 

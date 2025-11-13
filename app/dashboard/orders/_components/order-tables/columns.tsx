@@ -1,9 +1,10 @@
 'use client';
-import { Orders, UserId, Fulfilled } from '@/constants/data';
+
 import { Row } from '@tanstack/react-table'; // Import Row type
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import Cookies from 'universal-cookie';
+import { Fulfilled, Orders } from '@/@types/user';
 
 const cookies = new Cookies();
 const user = cookies.get('user');

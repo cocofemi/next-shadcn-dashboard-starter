@@ -6,21 +6,17 @@ import { useSearchParams, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
-import { getOrder, getStoreOrderDetails } from '@/utils/orders';
-import { CurrentUserContextType } from '@/@types/user';
+import {
+  getOrder,
+  getShippingLabel,
+  getStoreOrderDetails
+} from '@/utils/orders';
+import { CurrentUserContextType, Orders, ShippingLabel } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import CompleteOrderForm from './complete-order-form';
-
-interface IOrder {
-  _id: string;
-  storeName: string;
-  description: string;
-  social: string;
-  website: string;
-  location: string;
-  displayPicture: string;
-}
+import { ShippingRatesCard } from './shipping-rates-card';
+import { ShippingLabelCard } from './shipping-label-card';
 
 export default function OrderDetails() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
@@ -31,7 +27,8 @@ export default function OrderDetails() {
 
   const [visible, setVisible] = React.useState<boolean>(false);
 
-  const [order, setOrder] = React.useState<[] | any>([]);
+  const [order, setOrder] = React.useState<Orders | any>([]);
+  const [shippingLabel, setShippingLabel] = React.useState<ShippingLabel>();
   const [totalPrice, setTotalPrice] = React.useState(0);
 
   React.useEffect(() => {
@@ -61,6 +58,18 @@ export default function OrderDetails() {
       setTotalPrice(calculatedTotalPrice);
     }
   }, [order]); // This effect depends on `order`
+
+  React.useEffect(() => {
+    if (user?.token && order?.item?.length > 0) {
+      getShippingLabel(order?._id, user?.token)
+        .then((res) => {
+          setShippingLabel(res?.data);
+        })
+        .catch((e) =>
+          console.log('There was a problem getting shipping label')
+        );
+    }
+  }, [order]);
 
   return (
     <Card className="mx-auto w-full">
@@ -158,7 +167,7 @@ export default function OrderDetails() {
                         ))}
                     </tbody>
                   </table>
-                  <div className="mt-5 flex justify-end">
+                  <div className="ms-2 mt-5 flex justify-start">
                     <ul>
                       {user?.role === 'admin' && (
                         <li>{`Subotal: $${order.subTotal.toFixed(2)}`}</li>
@@ -268,6 +277,13 @@ export default function OrderDetails() {
       </CardHeader>
       {visible && (
         <>
+          <ShippingRatesCard
+            orderAddress={order.shippingDetails[0]}
+            order={order}
+          />
+          {shippingLabel?.paid && (
+            <ShippingLabelCard shippingLabel={shippingLabel} />
+          )}
           <CompleteOrderForm />
         </>
       )}

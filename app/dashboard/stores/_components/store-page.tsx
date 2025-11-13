@@ -1,20 +1,14 @@
 'use client';
 
 import PageContainer from '@/components/layout/page-container';
-import { buttonVariants } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Stores } from '@/constants/data';
-import { fakeUsers } from '@/constants/mock-api';
-import { searchParamsCache } from '@/lib/searchparams';
-import { cn } from '@/lib/utils';
-import { Plus } from 'lucide-react';
-import Link from 'next/link';
 import StoreTable from './store-tables';
 import React, { useEffect, useState } from 'react';
-import { CurrentUserContextType } from '@/@types/user';
+import { CurrentUserContextType, Stores } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { getAllStores } from '@/utils/store';
+import { Spinner } from '@/components/ui/spinner';
 
 type TUserListingPage = {};
 

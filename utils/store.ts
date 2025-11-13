@@ -34,7 +34,7 @@ export const getStore = async (storeName: any) => {
   }
 };
 
-export const getUserStore = async (userId: any) => {
+export const getUserStore = async (userId: string) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/user/store?userId=${userId}`,
@@ -85,6 +85,44 @@ export const getStoreOrders = async (
         Authorization: `Bearer ${token}`
       },
       method: 'GET'
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const storePaymentOnboarding = async (
+  storeId: string,
+  token: string
+) => {
+  try {
+    const response = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/store/payment/onboarding?storeId=${storeId}`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      method: 'POST'
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const storePayoutCompleteCheck = async (
+  storeId: string,
+  token: string
+) => {
+  try {
+    const response = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/store/payment/onboarding/complete?storeId=${storeId}`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      method: 'POST'
     });
     return response.data;
   } catch (error) {

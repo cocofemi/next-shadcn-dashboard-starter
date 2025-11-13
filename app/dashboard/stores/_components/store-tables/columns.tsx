@@ -1,6 +1,6 @@
 'use client';
+import { Stores } from '@/@types/user';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Stores } from '@/constants/data';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const columns: ColumnDef<Stores>[] = [
