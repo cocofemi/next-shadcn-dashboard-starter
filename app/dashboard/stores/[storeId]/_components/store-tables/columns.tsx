@@ -1,5 +1,5 @@
 'use client';
-import { Listing, ListingImage } from '@/constants/data';
+import { Listing, ListingImage } from '@/@types/user';
 import { ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
 

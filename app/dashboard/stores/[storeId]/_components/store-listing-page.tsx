@@ -3,11 +3,12 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Listing } from '@/constants/data';
 import StoreTable from './store-tables';
 import React, { useEffect, useState } from 'react';
 import { getStoreListing } from '@/utils/store';
 import { useSearchParams } from 'next/navigation';
+import { Listing } from '@/@types/user';
+import { Spinner } from '@/components/ui/spinner';
 
 type TUserListingPage = {};
 
@@ -39,6 +40,15 @@ export default function StoreListingPage({}: TUserListingPage) {
       setTotalListings(res?.meta.total);
     });
   }, [page, debouncedSearch]);
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+        <span className="ml-3 text-gray-500">Loading listings...</span>
+      </div>
+    );
+  }
 
   return (
     <PageContainer scrollable>

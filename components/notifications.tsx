@@ -25,20 +25,14 @@ import React from 'react';
 
 interface Notification {
   _id: string;
-  orderId: string;
-  type:
-    | 'NEW_ORDER'
-    | 'confirmed'
-    | 'preparing'
-    | 'ORDER_SHIPPED'
-    | 'delivered'
-    | 'alert';
+  orderId?: string;
+  type: 'NEW_ORDER' | 'ORDER_SHIPPED' | 'SYSTEM' | 'NEW_MESSAGE';
   title: string;
   message: string;
   createdAt: Date | string;
   read: boolean;
   orderAmount?: number;
-  customerName?: string;
+  name?: string;
 }
 
 export function Notifications() {
@@ -77,6 +71,7 @@ export function Notifications() {
         return <Truck className="h-4 w-4 text-purple-500" />;
       case 'delivered':
         return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
+        return;
       default:
         return <Bell className="h-4 w-4" />;
     }
@@ -189,10 +184,10 @@ export function Notifications() {
                       <p className="mt-1 text-xs text-muted-foreground">
                         {notification.message}
                       </p>
-                      {notification.customerName && (
+                      {notification.name && (
                         <p className="mt-1 text-xs text-muted-foreground">
                           <span className="font-medium">
-                            {notification.customerName}
+                            {notification.name}
                           </span>
                           {notification.orderAmount && (
                             <span>
@@ -200,6 +195,11 @@ export function Notifications() {
                               • ${notification.orderAmount.toFixed(2)}
                             </span>
                           )}
+                        </p>
+                      )}
+                      {notification?.orderId && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {notification.orderId}
                         </p>
                       )}
                       <p className="mt-2 text-xs text-muted-foreground">

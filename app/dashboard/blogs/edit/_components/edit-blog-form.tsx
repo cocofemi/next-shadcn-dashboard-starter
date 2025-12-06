@@ -25,6 +25,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 
 import MDEditor from '@uiw/react-md-editor';
 import { deleteBlog, getBlog, updateBlog } from '@/utils/blogs';
+import { Spinner } from '@/components/ui/spinner';
 
 interface IBlog {
   title: string;
@@ -134,6 +135,15 @@ export default function EditBlogForm() {
     });
   }
 
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+        <span className="ml-3 text-gray-500">Loading post...</span>
+      </div>
+    );
+  }
+
   return (
     <Card className="mx-auto w-full">
       <CardHeader>
@@ -141,98 +151,91 @@ export default function EditBlogForm() {
           Edit Post
         </CardTitle>
       </CardHeader>
-      {!loading && (
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter title" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="tag"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Heading
-                        title={'Tags'}
-                        description=" Please enter tags associated with blog post."
-                      />
-                      <FormControl>
-                        <Textarea placeholder="Enter tags" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div>
-                <Heading
-                  title={'Blog Image'}
-                  description=" Please upload image for blog post. This is the main image that will be displayed."
-                />
-                <FileUpload defaultImage={images} fileImages={fileImages} />
-              </div>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="tag"
+                render={({ field }) => (
+                  <FormItem>
+                    <Heading
+                      title={'Tags'}
+                      description=" Please enter tags associated with blog post."
+                    />
+                    <FormControl>
+                      <Textarea placeholder="Enter tags" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div>
+              <Heading
+                title={'Blog Image'}
+                description=" Please upload image for blog post. This is the main image that will be displayed."
+              />
+              <FileUpload defaultImage={images} fileImages={fileImages} />
+            </div>
 
-              <div data-color-mode="light">
-                <Heading
-                  title={'Content'}
-                  description=" Please write content of blog post here."
-                />
-                <MDEditor
-                  value={markdown}
-                  onChange={(val) => setMarkdown(val || '')}
-                  height={'500px'}
-                />
-              </div>
-              <Button type="submit" disabled={updateLoading || deleteLoading}>
-                Update Post
-                <ClipLoader
-                  color="white"
-                  loading={updateLoading}
-                  //cssOverride={override}
-                  size={25}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                />
-              </Button>
-              <Button
-                type="submit"
-                className="ms-5 bg-red-700"
-                onClick={handleDelete}
-                disabled={updateLoading || deleteLoading}
-              >
-                Delete Post
-                <ClipLoader
-                  color="white"
-                  loading={deleteLoading}
-                  //cssOverride={override}
-                  size={25}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                />
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      )}
-      {loading && (
-        <CardTitle className="ms-6 text-left text-2xl font-bold">
-          Loading...
-        </CardTitle>
-      )}
+            <div data-color-mode="light">
+              <Heading
+                title={'Content'}
+                description=" Please write content of blog post here."
+              />
+              <MDEditor
+                value={markdown}
+                onChange={(val) => setMarkdown(val || '')}
+                height={'500px'}
+              />
+            </div>
+            <Button type="submit" disabled={updateLoading || deleteLoading}>
+              Update Post
+              <ClipLoader
+                color="white"
+                loading={updateLoading}
+                //cssOverride={override}
+                size={25}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
+            </Button>
+            <Button
+              type="submit"
+              className="ms-5 bg-red-700"
+              onClick={handleDelete}
+              disabled={updateLoading || deleteLoading}
+            >
+              Delete Post
+              <ClipLoader
+                color="white"
+                loading={deleteLoading}
+                //cssOverride={override}
+                size={25}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
     </Card>
   );
 }

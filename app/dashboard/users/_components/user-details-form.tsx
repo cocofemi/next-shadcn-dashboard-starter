@@ -29,24 +29,14 @@ import { UserContext } from '@/context/UserProvider';
 import { Textarea } from '@/components/ui/textarea';
 
 import ClipLoader from 'react-spinners/ClipLoader';
+import { Spinner } from '@/components/ui/spinner';
 
 const formSchema = z.object({
-  fname: z.string().min(2, {
-    message: 'Name must be at least 2 characters.'
-  }),
-  lname: z.string().min(2, {
-    message: 'Name must be at least 2 characters.'
-  }),
-
-  email: z.string().email({
-    message: 'Please enter a valid email address.'
-  }),
-  phone_number: z.string().min(2, {
-    message: 'Number must be at least 2 characters.'
-  }),
-  bio: z.string().min(1, {
-    message: 'Company name is required.'
-  }),
+  fname: z.string(),
+  lname: z.string(),
+  email: z.string(),
+  phone_number: z.string(),
+  bio: z.string(),
   role: z.string({
     required_error: 'Please select a role.'
   })
@@ -63,7 +53,6 @@ export default function UserDetailForm() {
   const [submitLoading, setSubmitLoading] = React.useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
     defaultValues: {
       fname: '',
       lname: '',
@@ -99,7 +88,15 @@ export default function UserDetailForm() {
       setSubmitLoading(false);
       router.back();
     });
-    console.log(values);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+        <span className="ml-3 text-gray-500">Loading user</span>
+      </div>
+    );
   }
 
   return (
@@ -109,141 +106,132 @@ export default function UserDetailForm() {
           User Information
         </CardTitle>
       </CardHeader>
-      {!loading && (
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="fname"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your name"
-                          {...field}
-                          disabled
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lname"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your name"
-                          {...field}
-                          disabled
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="Enter your email"
-                          {...field}
-                          disabled
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Enter your phone number"
-                          {...field}
-                          disabled
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Role</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a role" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="user">User</SelectItem>
-                          <SelectItem value="store">Store</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="bio"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Bio</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Enter bio" {...field} disabled />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="fname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your name"
+                        {...field}
+                        disabled
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your name"
+                        {...field}
+                        disabled
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <Button disabled={submitLoading} type="submit">
-                Update User
-                <ClipLoader
-                  color="white"
-                  loading={submitLoading}
-                  //cssOverride={override}
-                  size={25}
-                  aria-label="Loading Spinner"
-                  data-testid="loader"
-                />
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      )}
-      {loading && (
-        <CardTitle className="ms-6 text-left text-2xl font-bold">
-          Loading...
-        </CardTitle>
-      )}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        {...field}
+                        disabled
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Enter your phone number"
+                        {...field}
+                        disabled
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="user">User</SelectItem>
+                        <SelectItem value="store">Store</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bio</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter bio" {...field} disabled />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button disabled={submitLoading} type="submit">
+              Update User
+              <ClipLoader
+                color="white"
+                loading={submitLoading}
+                //cssOverride={override}
+                size={25}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
     </Card>
   );
 }

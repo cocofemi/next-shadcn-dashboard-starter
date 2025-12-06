@@ -3,7 +3,6 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,21 +12,13 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { Heading } from '@/components/ui/heading';
-import { Textarea } from '@/components/ui/textarea';
 import { Copy, CheckCircle } from 'lucide-react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { Spinner } from '@/components/ui/spinner';
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -39,18 +30,41 @@ const formSchema = z.object({
   email: z.string().email({
     message: 'Please enter a valid email address.'
   }),
-  role: z.string().optional()
+  storeName: z.string({
+    required_error: 'Enter store name.'
+  }),
+  role: z.string({
+    required_error: 'Enter role'
+  }),
+  storeAddress: z.object({
+    address: z.string().min(2, { message: 'Address required' }),
+    city: z.string().min(2, { message: 'City required' }),
+    zipCode: z.string().min(2, { message: 'Zip Code required' }),
+    country: z.string().min(2, { message: 'Country required' })
+  }),
+  description: z.string({
+    required_error: 'Enter description.'
+  })
 });
 
 export default function ProfileForm() {
-  const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const { user, loading } = React.useContext(
+    UserContext
+  ) as CurrentUserContextType;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: user?.firstName,
-      last_name: user?.lastName,
+      name: '',
+      last_name: '',
       email: user?.email,
-      role: user.role
+      storeName: '',
+      storeAddress: {
+        address: '',
+        city: '',
+        zipCode: '',
+        country: ''
+      },
+      description: ''
     }
   });
 
@@ -58,7 +72,34 @@ export default function ProfileForm() {
     console.log(values);
   }
 
+  React.useEffect(() => {
+    if (user && !loading) {
+      form.reset({
+        name: user?.firstName || '',
+        last_name: user?.lastName || '',
+        email: user?.email || '',
+        storeName: user?.storeName || '',
+        storeAddress: {
+          address: user?.storeAddress?.[0]?.address || '',
+          city: user?.storeAddress?.[0]?.city || '',
+          zipCode: user?.storeAddress?.[0]?.zipCode || '',
+          country: user?.storeAddress?.[0]?.country || ''
+        },
+        description: user?.description || ''
+      });
+    }
+  }, [user, loading, form]);
+
   const [copied, setCopied] = React.useState(false);
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+        <span className="ml-3 text-gray-500">Loading profile...</span>
+      </div>
+    );
+  }
 
   return (
     <Card className="mx-auto w-full">
@@ -93,7 +134,7 @@ export default function ProfileForm() {
                 name="last_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Last name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Enter your name"
@@ -123,20 +164,102 @@ export default function ProfileForm() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} disabled />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div>
+              {user?.role === 'store' && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="storeName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Store Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="" {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="storeAddress.address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Store Address</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter store address"
+                            {...field}
+                            disabled
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="storeAddress.city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter city" {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="storeAddress.zipCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Zip Code</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter zip code"
+                            {...field}
+                            disabled
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="storeAddress.country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Country</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter country"
+                            {...field}
+                            disabled
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Input placeholder="" {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />{' '}
+                </>
+              )}
+
+              {/* <div>
                 <div>
                   <Heading
                     title={'Embed Listings'}
@@ -173,7 +296,7 @@ export default function ProfileForm() {
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
             {/* <Button type="submit" disabled>
               Submit

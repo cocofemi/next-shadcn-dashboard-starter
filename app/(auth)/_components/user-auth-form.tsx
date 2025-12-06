@@ -63,7 +63,12 @@ export default function UserAuthForm() {
           token: res?.data?.token,
           role: res?.data?.role,
           storeId: res?.data?.storeId,
-          storeName: res?.data?.storeName
+          storeName: res?.data?.storeName,
+          stripeAccountId: res?.data?.stripeAccountId,
+          stripeOnboardingComplete: res?.data?.stripeOnboardingComplete,
+          storeAddress: res.data.storeAddress,
+          description: res.data.description,
+          storeEmail: res.data.storeEmail
         };
         setUser(userData);
         setLoading(false);
@@ -86,22 +91,31 @@ export default function UserAuthForm() {
     googleLogin(token)
       .then((res: any) => {
         if (res.status === 200) {
-          cookies.set('mechchant_admin_user', JSON.stringify(res.data), {
-            path: '/'
-          });
-          const userData: IUser = {
-            firstName: res?.data?.firstName,
-            lastName: res?.data?.lastName,
-            email: res?.data?.email,
-            userId: res?.data?.userId,
-            token: res?.data?.token,
-            role: res?.data?.role,
-            storeId: res?.data?.storeId,
-            storeName: res?.data?.storeName
-          };
-          setUser(userData);
-          toast.success('Signed In Successfully!');
-          router.push('/dashboard/overview');
+          if (res?.data?.role != 'store') {
+            setError('You are not authorized to access the dashboard');
+          } else {
+            cookies.set('mechchant_admin_user', JSON.stringify(res.data), {
+              path: '/'
+            });
+            const userData: IUser = {
+              firstName: res?.data?.firstName,
+              lastName: res?.data?.lastName,
+              email: res?.data?.email,
+              userId: res?.data?.userId,
+              token: res?.data?.token,
+              role: res?.data?.role,
+              storeId: res?.data?.storeId,
+              storeName: res?.data?.storeName,
+              stripeAccountId: res?.data?.stripeAccountId,
+              stripeOnboardingComplete: res?.data?.stripeOnboardingComplete,
+              storeAddress: res.data.storeAddress,
+              description: res.data.description,
+              storeEmail: res.data.storeEmail
+            };
+            setUser(userData);
+            toast.success('Signed In Successfully!');
+            router.push('/dashboard/overview');
+          }
         } else {
           setError('There was a problem logging in with google ');
         }

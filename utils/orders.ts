@@ -57,6 +57,72 @@ export const getStoreOrderDetails = async (
   }
 };
 
+export const getShippingRates = async (
+  fromAddress: any,
+  toAddress: any,
+  parcels: any,
+  token: string
+) => {
+  try {
+    const response = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/shipping/rates`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      method: 'POST',
+      data: {
+        fromAddress,
+        toAddress,
+        parcels
+      }
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const buyLabel = async (
+  rateId: any,
+  orderId: string,
+  storeId: string,
+  token: string
+) => {
+  try {
+    const response = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/buy/shipping-label`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      method: 'POST',
+      data: {
+        rateId,
+        orderId,
+        storeId
+      }
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getShippingLabel = async (orderId: any, token: string) => {
+  try {
+    const response = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/shipping-label?orderId=${orderId}`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      method: 'GET'
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const completeOrder = async (
   orderId: any,
   storeId: any,
