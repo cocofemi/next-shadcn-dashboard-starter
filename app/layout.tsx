@@ -6,7 +6,7 @@ import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 import './globals.css';
 
-//
+
 
 export const metadata: Metadata = {
   title: 'Mehchant-Admin',
