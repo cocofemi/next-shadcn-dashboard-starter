@@ -3,12 +3,12 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Users } from '@/constants/data';
 import React, { useEffect, useState } from 'react';
 import { getAllUsers } from '@/utils/user';
-import { CurrentUserContextType } from '@/@types/user';
+import { CurrentUserContextType, Users } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import UsersTable from './users-tables';
+import { Spinner } from '@/components/ui/spinner';
 
 type TUserListingPage = {};
 
@@ -49,13 +49,6 @@ export default function UsersPage({}: TUserListingPage) {
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading title={`Users (${totalUsers})`} description="" />
-
-          {/* <Link
-            href={'/dashboard/employee/new'}
-            className={cn(buttonVariants({ variant: 'default' }))}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add New
-          </Link> */}
         </div>
         <Separator />
         <UsersTable

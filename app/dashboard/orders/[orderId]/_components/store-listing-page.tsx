@@ -3,11 +3,12 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Listing } from '@/constants/data';
+
 import StoreTable from './store-tables';
 import React, { useEffect, useState } from 'react';
 import { getStoreListing } from '@/utils/store';
 import { useSearchParams } from 'next/navigation';
+import { Listing } from '@/@types/user';
 
 type TUserListingPage = {};
 

@@ -1,8 +1,8 @@
 'use client';
 
-import { CurrentUserContextType } from '@/@types/user';
+import { CurrentUserContextType, OrderItem, Orders } from '@/@types/user';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { OrderItem, Orders } from '@/constants/data';
+
 import { UserContext } from '@/context/UserProvider';
 import { useRouter } from 'next/navigation';
 import React from 'react';

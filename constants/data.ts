@@ -91,118 +91,6 @@ export const users: User[] = [
   }
 ];
 
-export type Users = {
-  _id: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-  phoneNumber: string;
-};
-
-export type Stores = {
-  _id: string;
-  storeName: string;
-  location: string;
-  description: string;
-};
-
-export type Listing = {
-  _id: string;
-  listingId: string;
-  listingName: string;
-  description: string;
-  price: number;
-  category: string;
-  sku: string;
-  upc: number;
-  listingImage: ListingImage;
-  storeName: string;
-  createdAt: string;
-};
-
-export type Blogs = {
-  _id: string;
-  title: string;
-  tag: string;
-  author: UserId;
-  content: string;
-  createdAt: string;
-};
-
-export type ListingImage = {
-  _id: string;
-  url: string;
-};
-
-export type Orders = {
-  _id: string;
-  name: string;
-  email: string;
-  phoneNumber: string;
-  orderId: string;
-  item: OrderItem[];
-  userId: UserId;
-  storeId: Store;
-  fulfilled: [Fulfilled];
-  createdAt: string;
-  subTotal: number;
-};
-
-export type UserId = {
-  _id: string;
-  firstname: string;
-  lastname: string;
-  email: string;
-};
-export type Store = {
-  _id: string;
-  storeName: string;
-};
-
-export type OrderItem = {
-  price: number;
-  quantity: number;
-  storeId: string;
-  fulfilled: boolean;
-};
-
-export type Fulfilled = {
-  _id: string;
-  storeId: string;
-  fulfilled: boolean;
-  fulfillmentDetails: string;
-};
-
-export type Employee = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  gender: string;
-  date_of_birth: string; // Consider using a proper date type if possible
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-  zipcode: string;
-  longitude?: number; // Optional field
-  latitude?: number; // Optional field
-  job: string;
-  profile_picture?: string | null; // Profile picture can be a string (URL) or null (if no picture)
-};
-
-export type Product = {
-  photo_url: string;
-  name: string;
-  description: string;
-  created_at: string;
-  price: number;
-  id: number;
-  category: string;
-  updated_at: string;
-};
-
 export const navItems: NavItem[] = [
   {
     title: 'Dashboard',
@@ -224,7 +112,7 @@ export const navItems: NavItem[] = [
     title: 'Orders',
     url: '/dashboard/orders',
     icon: 'wallet',
-    shortcut: ['e', 'e'],
+    shortcut: ['o', 'o'],
     isActive: false,
     items: [] // No child items
   },
@@ -232,7 +120,7 @@ export const navItems: NavItem[] = [
     title: 'Users',
     url: '/dashboard/users',
     icon: 'user',
-    shortcut: ['e', 'e'],
+    shortcut: ['u', 'u'],
     isActive: false,
     items: [] // No child items
   },
@@ -240,7 +128,7 @@ export const navItems: NavItem[] = [
     title: 'Stores',
     url: '/dashboard/stores',
     icon: 'store',
-    shortcut: ['e', 'e'],
+    shortcut: ['s', 's'],
     isActive: false,
     items: [] // No child items
   },
@@ -248,7 +136,15 @@ export const navItems: NavItem[] = [
     title: 'Listings',
     url: '/dashboard/listings',
     icon: 'product',
-    shortcut: ['e', 'e'],
+    shortcut: ['l', 'l'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: 'Payouts',
+    url: '/dashboard/payouts',
+    icon: 'money',
+    shortcut: ['p', 'p'],
     isActive: false,
     items: [] // No child items
   },
@@ -256,7 +152,7 @@ export const navItems: NavItem[] = [
     title: 'Blogs',
     url: '/dashboard/blogs',
     icon: 'post',
-    shortcut: ['e', 'e'],
+    shortcut: ['b', 'b'],
     isActive: false,
     items: [] // No child items
   },
@@ -279,7 +175,7 @@ export const navItems: NavItem[] = [
         title: 'Profile',
         url: '/dashboard/profile',
         icon: 'userPen',
-        shortcut: ['m', 'm']
+        shortcut: ['a', 'a']
       }
       // {
       //   title: 'Login',
@@ -312,7 +208,7 @@ export const storenavItems: NavItem[] = [
     title: 'Orders',
     url: '/dashboard/orders',
     icon: 'wallet',
-    shortcut: ['e', 'e'],
+    shortcut: ['o', 'o'],
     isActive: false,
     items: [] // No child items
   },
@@ -320,6 +216,14 @@ export const storenavItems: NavItem[] = [
     title: 'Listings',
     url: '/dashboard/listings',
     icon: 'product',
+    shortcut: ['l', 'l'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: 'Payouts',
+    url: '/dashboard/payouts',
+    icon: 'money',
     shortcut: ['e', 'e'],
     isActive: false,
     items: [] // No child items
@@ -335,7 +239,7 @@ export const storenavItems: NavItem[] = [
         title: 'Profile',
         url: '/dashboard/profile',
         icon: 'userPen',
-        shortcut: ['m', 'm']
+        shortcut: ['a', 'a']
       }
     ]
   }
@@ -370,7 +274,12 @@ export const steps = [
   },
   {
     target: '.sidebar-icon-product',
-    content: 'Your Listings — add or manage products displayed in your store.'
+    content: 'Your listings — add or manage products displayed in your store.'
+  },
+  {
+    target: '.sidebar-icon-money',
+    content:
+      'Your payouts — here you enable payments for your store and start receiving payouts.'
   },
   {
     target: '.header-notification-icon',

@@ -3,10 +3,9 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { Listing, Orders } from '@/constants/data';
 import OrdersTable from './order-tables';
 import React, { useEffect, useState } from 'react';
-import { CurrentUserContextType, IStoreData } from '@/@types/user';
+import { CurrentUserContextType, Orders } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { getAllOrders } from '@/utils/orders';
 import { getUserStore, getStoreOrders } from '@/utils/store';

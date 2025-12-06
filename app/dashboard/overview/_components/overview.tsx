@@ -17,12 +17,17 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getMetrics } from '@/utils/metrics';
 import { useEffect, useState } from 'react';
-import { CurrentUserContextType, IMetrics, IStoreData } from '@/@types/user';
+import {
+  CurrentUserContextType,
+  IMetrics,
+  IStoreData,
+  Orders
+} from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import React from 'react';
 import { RecentOrders } from './recent-orders';
 import { getAllOrders } from '@/utils/orders';
-import { Orders } from '@/constants/data';
+
 import {
   getStore,
   getStoreListing,

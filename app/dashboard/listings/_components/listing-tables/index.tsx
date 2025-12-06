@@ -3,9 +3,9 @@
 import { DataTable } from '@/components/ui/table/data-table';
 import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
-import { Listing } from '@/constants/data';
 import { columns } from './columns';
 import { useEmployeeTableFilters } from './use-employee-table-filters';
+import { Listing } from '@/@types/user';
 
 export default function ListingTable({
   data,
