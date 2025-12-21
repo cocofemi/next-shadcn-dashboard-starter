@@ -177,7 +177,9 @@ export default function EditListingForm() {
               res?.data?.listing?.shippingManualSpec?.processingTime ?? 0
           });
           setShippingMode(res?.data?.listing?.shipping || 'automatic');
-          setSelectedLocation(res?.data?.listing?.shippingManualSpec?.location);
+          setSelectedLocation(
+            res?.data?.listing?.shippingManualSpec?.location || continents
+          );
           setMarkdown(res?.data?.listing?.description);
           const images = res.data.listing.listingImage.map(
             (item: any) => item.url
@@ -220,7 +222,7 @@ export default function EditListingForm() {
 
   const [selectedLocation, setSelectedLocation] = React.useState<string[]>([]);
 
-  const isAllSelected = selectedLocation.length === continents.length;
+  const isAllSelected = selectedLocation?.length === continents.length;
 
   const toggleWorldwide = (checked: boolean) => {
     if (checked) {
@@ -232,7 +234,7 @@ export default function EditListingForm() {
 
   const toggleContinent = (continent: string) => {
     setSelectedLocation((prev) =>
-      prev.includes(continent)
+      prev?.includes(continent)
         ? prev.filter((item) => item !== continent)
         : [...prev, continent]
     );
@@ -954,7 +956,7 @@ export default function EditListingForm() {
                                   >
                                     <Checkbox
                                       id={continent}
-                                      checked={selectedLocation.includes(
+                                      checked={selectedLocation?.includes(
                                         continent
                                       )}
                                       onCheckedChange={() =>
