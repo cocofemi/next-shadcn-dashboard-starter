@@ -3,6 +3,7 @@
 import { Blogs, UserId } from '@/@types/user';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
+import { CellAction } from './cell-action';
 
 export const columns: ColumnDef<Blogs>[] = [
   {
@@ -68,7 +69,7 @@ export const columns: ColumnDef<Blogs>[] = [
     }
   },
   {
-    id: 'actions'
-    //cell: ({ row }) => <CellAction data={row.original} />
+    id: 'actions',
+    cell: ({ row }) => <CellAction data={row.original} />
   }
 ];

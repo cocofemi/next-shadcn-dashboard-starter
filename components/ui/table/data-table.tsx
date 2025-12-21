@@ -172,19 +172,19 @@ export function DataTable<
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
-                    onClick={() => {
-                      if (url) {
-                        const slug = row.original.storeName
-                          ? row.original.storeName
-                          : row.original.orderId
-                            ? row.original.orderId
-                            : row.original.firstname
-                              ? row.original.firstname
-                              : '';
-                        const query = `?id=${row.original._id}`; // Add query only if storeName is present
-                        router.push(`${url}/${slug}${query}`);
-                      }
-                    }}
+                    // onClick={() => {
+                    //   if (url) {
+                    //     const slug = row.original.storeName
+                    //       ? row.original.storeName
+                    //       : row.original.orderId
+                    //         ? row.original.orderId
+                    //         : row.original.firstname
+                    //           ? row.original.firstname
+                    //           : '';
+                    //     const query = `?id=${row.original._id}`; // Add query only if storeName is present
+                    //     router.push(`${url}/${slug}${query}`);
+                    //   }
+                    // }}
                     className="capitalize hover:cursor-pointer"
                   >
                     {row.getVisibleCells().map((cell) => (

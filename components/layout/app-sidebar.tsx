@@ -74,7 +74,7 @@ export default function AppSidebar() {
     if (user?.token) {
       getStoreListing(user?.storeId, 1, 5).then((res) => {
         if (user?.role === 'store') {
-          if (res?.data.length === 0 && !hasSeenTour) {
+          if (res?.data?.length === 0 && !hasSeenTour) {
             const timer = setTimeout(() => {
               setRunTour(true);
             }, 500);

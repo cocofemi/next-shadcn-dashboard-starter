@@ -230,7 +230,7 @@ export function BarGraph() {
                 <div className="flex h-screen items-center justify-center">
                   <Spinner />
                 </div>
-              ) : products.length > 0 ? (
+              ) : products?.length > 0 ? (
                 <BarChart data={products}>
                   <XAxis
                     dataKey="listingName"

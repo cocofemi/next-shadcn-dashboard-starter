@@ -178,7 +178,7 @@ export default function OrderDetails() {
                       <li>
                         Shipping Fee: {`$${order.shippingFee.toFixed(2)}`}
                       </li>
-                      <li>Shipping Type: {`${order.shippingType}`}</li>
+                      {/* <li>Shipping Type: {`${order.shippingType}`}</li> */}
                       {/* <li>Tax: $2.00</li> */}
                       {user?.role === 'admin' && (
                         <li>{`Total: $${(order.subTotal + order.shippingFee).toFixed(2)}`}</li>

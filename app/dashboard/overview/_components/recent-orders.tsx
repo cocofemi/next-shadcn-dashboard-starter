@@ -18,7 +18,7 @@ export const RecentOrders: React.FC<OrderProps> = ({ orders }) => {
   const [totalPrice, setTotalPrice] = React.useState<any>([]);
 
   React.useEffect(() => {
-    const totalPrices = orders.map((order) =>
+    const totalPrices = orders?.map((order) =>
       order.item.reduce(
         (sum: number, item: OrderItem) => sum + item.price * item.quantity,
         0
@@ -30,7 +30,7 @@ export const RecentOrders: React.FC<OrderProps> = ({ orders }) => {
 
   return (
     <div className="dashboard-recent-orders space-y-8">
-      {orders.slice(0, 4).map((item, index) => (
+      {orders?.slice(0, 4).map((item, index) => (
         <div key={index}>
           <div
             className="flex items-center hover:cursor-pointer"
@@ -95,7 +95,7 @@ export const RecentOrders: React.FC<OrderProps> = ({ orders }) => {
         </div>
       ))}
 
-      {orders.length === 0 && <p>No orders yet.</p>}
+      {orders?.length === 0 && <p>No orders yet.</p>}
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import Cookies from 'universal-cookie';
 import { Fulfilled, Orders } from '@/@types/user';
+import { CellAction } from './cell-action';
 
 const cookies = new Cookies();
 const user = cookies.get('user');
@@ -133,7 +134,7 @@ export const columns: ColumnDef<Orders>[] = [
     : []),
 
   {
-    id: 'actions'
-    //cell: ({ row }) => <CellAction data={row.original} />
+    id: 'actions',
+    cell: ({ row }) => <CellAction data={row.original} />
   }
 ];

@@ -80,13 +80,13 @@ export default function PayoutsPage({}: TUserListingPage) {
       .finally(() => setEnableLoading(false));
   };
 
-  useEffect(() => {
-    if (user?.token) {
-      storePayoutCompleteCheck(user?.storeId, user?.token).then(() => {
-        console.log('Success');
-      });
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user?.token) {
+  //     storePayoutCompleteCheck(user?.storeId, user?.token).then(() => {
+  //       console.log('Success');
+  //     });
+  //   }
+  // }, [user]);
 
   return (
     <PageContainer scrollable>
