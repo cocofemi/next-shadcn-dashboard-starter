@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { CurrentUserContextType, Orders } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { getAllOrders } from '@/utils/orders';
-import { getUserStore, getStoreOrders } from '@/utils/store';
+import { getStoreOrders } from '@/utils/store';
 
 type TUserListingPage = {};
 

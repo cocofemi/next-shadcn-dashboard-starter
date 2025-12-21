@@ -3,13 +3,15 @@ import axios from 'axios';
 export const getAllStores = async (
   page: number,
   limit: number,
-  search: string = ''
+  search: string = '',
+  token: string
 ) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/stores/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       },
       method: 'GET'
     });
@@ -34,12 +36,13 @@ export const getStore = async (storeName: any) => {
   }
 };
 
-export const getUserStore = async (userId: string) => {
+export const getUserStore = async (userId: string, token: string) => {
   try {
     const response = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/user/store?userId=${userId}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/user/store/admin?userId=${userId}`,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
       },
       method: 'GET'
     });

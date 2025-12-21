@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
@@ -16,7 +16,9 @@ import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
@@ -24,7 +26,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Heading } from '@/components/ui/heading';
-import { Plus, Trash } from 'lucide-react';
+import { Globe, Plus, Trash } from 'lucide-react';
 import FileUpload from './fileUpload';
 import { cn } from '@/lib/utils';
 import { updateListing, getListing, deleteListing } from '@/utils/listings';
@@ -36,6 +38,8 @@ import ClipLoader from 'react-spinners/ClipLoader';
 
 import MDEditor from '@uiw/react-md-editor';
 import { Spinner } from '@/components/ui/spinner';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface IListing {
   name: string;
@@ -49,6 +53,17 @@ interface IListing {
   upc: string;
   shipping: string;
   variation: any[];
+  shippingSpec: {
+    width: number;
+    length: number;
+    height: number;
+    weight: number;
+  };
+  shippingManualSpec: {
+    shippingFee: number;
+    processingTime: string;
+    location: string[];
+  };
 }
 
 const formSchema = z.object({
@@ -79,10 +94,23 @@ const formSchema = z.object({
   upc: z.coerce.number().min(1, {
     message: 'Please enter upc'
   }),
-  shipping: z.string().min(1, {
-    message: 'Please select a shipping option.'
-  })
+  shippingFee: z.coerce.number().optional(),
+  processingTime: z.coerce.string().optional(),
+  weight: z.coerce.number().min(1, { message: 'Weight required' }),
+  length: z.coerce.number().min(1, { message: 'Length required' }),
+  width: z.coerce.number().min(1, { message: 'Width required' }),
+  height: z.coerce.number().min(1, { message: 'Height required' })
 });
+
+const continents = [
+  'Africa',
+  'Antarctica',
+  'Asia',
+  'Europe',
+  'North America',
+  'Oceania',
+  'South America'
+];
 
 export default function EditListingForm() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
@@ -92,7 +120,7 @@ export default function EditListingForm() {
   const id = search.get('id');
   const [markdown, setMarkdown] = React.useState('');
 
-  //console.log(markdown)
+  const [shippingMode, setShippingMode] = React.useState('automatic');
 
   const [listing, setListing] = React.useState<IListing>();
   const [variants, setVariants] = React.useState([{ option: '', value: '' }]);
@@ -109,11 +137,15 @@ export default function EditListingForm() {
       //description: '',
       tags: '',
       type: '',
-      shipping: '',
+      shippingFee: 0,
       price: 0,
       quantity: 0,
       sku: '',
-      upc: 0
+      upc: 0,
+      weight: 0,
+      height: 0,
+      width: 0,
+      length: 0
     }
   });
 
@@ -131,23 +163,26 @@ export default function EditListingForm() {
               ? res?.data?.listing.tags.join(', ')
               : res?.data?.listing.tags,
             type: res?.data?.listing?.type,
-            shipping: res?.data?.listing?.shipping,
             price: res?.data?.listing?.price,
             quantity: res?.data?.listing?.quantity,
             sku: String(res?.data?.listing?.sku),
-            upc: res?.data?.listing?.upc
+            upc: res?.data?.listing?.upc,
+            weight: res?.data?.listing?.shippingSpec?.weight,
+            height: res?.data?.listing?.shippingSpec?.height,
+            length: res?.data?.listing?.shippingSpec?.length,
+            width: res?.data?.listing?.shippingSpec?.width,
+            shippingFee: res?.data?.listing?.shippingManualSpec?.shippingFee,
+            processingTime:
+              res?.data?.listing?.shippingManualSpec?.processingTime
           });
+          setShippingMode(res?.data?.listing?.shipping || 'automatic');
+          setSelectedLocation(res?.data?.listing?.shippingManualSpec?.location);
           setMarkdown(res?.data?.listing?.description);
           const images = res.data.listing.listingImage.map(
             (item: any) => item.url
           );
           setImages(images);
           setListingImages(images);
-          //console.log(res.data.listing.variation.length)
-          // setAddedOptions(res.data.listing.variation)
-          // if (res.data.listing.variation.length > 0) {
-          //   setIsChecked(true)
-          // }
         } else {
           router.push('/not-found');
         }
@@ -180,6 +215,26 @@ export default function EditListingForm() {
   const fileImages = (images: any) => {
     setListingImages(images);
     setReRender((prevState) => !prevState);
+  };
+
+  const [selectedLocation, setSelectedLocation] = React.useState<string[]>([]);
+
+  const isAllSelected = selectedLocation.length === continents.length;
+
+  const toggleWorldwide = (checked: boolean) => {
+    if (checked) {
+      setSelectedLocation(continents);
+    } else {
+      setSelectedLocation([]);
+    }
+  };
+
+  const toggleContinent = (continent: string) => {
+    setSelectedLocation((prev) =>
+      prev.includes(continent)
+        ? prev.filter((item) => item !== continent)
+        : [...prev, continent]
+    );
   };
 
   const handleVariantChange = (
@@ -219,7 +274,6 @@ export default function EditListingForm() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setUpdateLoading(true);
-    console.log(values);
     const {
       name,
       category,
@@ -230,10 +284,28 @@ export default function EditListingForm() {
       quantity,
       sku,
       upc,
-      shipping
+      width,
+      height,
+      weight,
+      length,
+      shippingFee,
+      processingTime
     } = values;
 
     let variants = combineVariants();
+
+    const shippingSpec = {
+      width,
+      height,
+      length,
+      weight
+    };
+
+    const shippingManualSpec = {
+      shippingFee,
+      processingTime,
+      location: selectedLocation
+    };
 
     const formData = new FormData();
     formData.append('listingName', name);
@@ -245,8 +317,10 @@ export default function EditListingForm() {
     formData.append('quantity', quantity.toString());
     formData.append('sku', sku);
     formData.append('upc', upc.toString());
-    formData.append('shipping', shipping);
+    formData.append('shipping', shippingMode);
     formData.append('variation', JSON.stringify(variants));
+    formData.append('shippingSpec', JSON.stringify(shippingSpec));
+    formData.append('shippingManualSpec', JSON.stringify(shippingManualSpec));
 
     formData.append('userId', user?.userId);
     formData.append('storeId', user?.storeId);
@@ -254,6 +328,9 @@ export default function EditListingForm() {
     for (const image of listingImages) {
       formData.append('images', image);
     }
+
+    // const dataObject = Object.fromEntries(formData.entries());
+    // console.log(dataObject);
 
     updateListing(formData, user?.token, id)
       .then((res) => {
@@ -503,38 +580,6 @@ export default function EditListingForm() {
                   Add Another Option
                 </button>
               </div>
-
-              {/* {listing?.variation.map((item: any, index: number) => (
-                  <div className="rounded-md p-4 shadow" key={index}>
-                    <div>
-                      <>
-                        <h5 className="capitalize">{`${item?.option}`}</h5>
-                        {item.value.map((option: any, index: number) => (
-                          <p
-                            
-                            className="mt-2 inline-flex items-center rounded-md text-sm capitalize"
-                            key={index}
-                          >
-                            <Tag className="mr-2" /> {option}
-                          </p>
-                        ))}
-                      </>
-                    </div>
-                  </div>
-                ))} */}
-
-              {/* {listing?.variation && listing.variation.length > 0 && (
-                  <div className="mt-4">
-                    <button
-                      onClick={() => removeOptions()}
-                      type="submit"
-                      className={cn(buttonVariants({ variant: 'default' }))}
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Clear Variations
-                    </button>
-                  </div>
-                )} */}
             </div>
 
             <Heading
@@ -605,49 +650,333 @@ export default function EditListingForm() {
             </div>
 
             <div>
-              <FormField
-                control={form.control}
-                name="shipping"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <Heading
-                      title={'Shipping'}
-                      description=" Choose the shipping option available to deliver this listing."
-                    />
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="flex space-x-4"
-                      >
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <RadioGroupItem value="standard" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            Standard Delivery ($4.99)
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <RadioGroupItem value="express" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            Express Delivery ($8.99)
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2">
-                          <FormControl>
-                            <RadioGroupItem value="other" />
-                          </FormControl>
-                          <FormLabel className="font-normal">Other</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div>
+                <Heading
+                  title={'Shipping'}
+                  description=" Choose the shipping option available to deliver this listing."
+                />
+
+                <div className="space-y-4">
+                  <Label className="text-lg font-semibold text-foreground">
+                    Enter Parcel Specs
+                  </Label>
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <div className="space-y-2">
+                      <FormField
+                        control={form.control}
+                        name="weight"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Weight (lbs)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="Enter weight"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <FormField
+                        control={form.control}
+                        name="length"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Length (in)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="Enter length"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <FormField
+                        control={form.control}
+                        name="height"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Height (in)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="Enter height"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <FormField
+                        control={form.control}
+                        name="width"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Width (in)</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="Enter width"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card mt-3 border-0 shadow-sm">
+                  <div className="card-body p-0">
+                    <label className="form-label fw-bold mb-3">
+                      Shipping Setup
+                    </label>
+
+                    {/* Step 1: Choose Mode */}
+                    <div className="my-4 grid grid-cols-3 gap-4">
+                      <div className="flex flex-col">
+                        <div
+                          className={`h-full rounded border p-3 transition-all ${
+                            shippingMode === 'automatic'
+                              ? 'bg-light border-primary'
+                              : 'border-light-subtle'
+                          }`}
+                          onClick={() => setShippingMode('automatic')}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div className="d-flex align-items-start">
+                            {/* Radio Button */}
+                            <div className="form-check mb-0 flex">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                checked={shippingMode === 'automatic'}
+                                onChange={() => {}} // Controlled by parent onClick
+                              />
+                              <h6 className="fw-bold ms-1">Automatic</h6>
+                            </div>
+
+                            {/* Text Content */}
+                            <div className="ms-2">
+                              <p className="small mb-0">
+                                Allow mehchant to generate the best reates from
+                                your address to buyers address at checkout.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col">
+                        <div
+                          className={`h-full rounded border p-3 transition-all ${
+                            shippingMode === 'manual'
+                              ? 'bg-light border-primary'
+                              : 'border-light-subtle'
+                          }`}
+                          onClick={() => setShippingMode('manual')}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div className="card-body">
+                            <div className="form-check mb-0 flex">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                checked={shippingMode === 'manual'}
+                                onChange={() => {}}
+                              />
+                              <h6 className="card-title fw-bold ms-1">
+                                Manual
+                              </h6>
+                            </div>
+
+                            <p className="card-text small">
+                              Enter your own fixed shipping rates and delivery
+                              types for your customers.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col">
+                        <div
+                          className={`h-full rounded border p-3 transition-all ${
+                            shippingMode === 'free'
+                              ? 'bg-light border-primary'
+                              : 'border-light-subtle'
+                          }`}
+                          onClick={() => setShippingMode('free')}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div className="card-body">
+                            <div className="form-check mb-0 flex">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                checked={shippingMode === 'free'}
+                                onChange={() => {}}
+                              />
+                              <h6 className="card-title fw-bold ms-1">
+                                Free Shipping
+                              </h6>
+                            </div>
+
+                            <p className="card-text small">
+                              Shipping fee is incured by you. Buyers are charged
+                              automatic rates from mehchant outside selected
+                              shipping regions.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Step 2: Conditional Content */}
+                    <div className="bg-light rounded p-3">
+                      {shippingMode === 'automatic' ? (
+                        <div className="d-flex align-items-center">
+                          <i className="bi bi-magic me-2"></i>
+                          <small className="fw-medium">
+                            Mechant will automatically fetch the most
+                            cost-effective rates from FedEx, UPS, and DHL.
+                          </small>
+                        </div>
+                      ) : (
+                        <div className="animate-fade-in">
+                          <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                              <FormField
+                                control={form.control}
+                                name="shippingFee"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Shipping Fee (USD)</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        placeholder="Enter shipping fee"
+                                        {...field}
+                                        disabled={shippingMode === 'free'}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="form-label small fw-bold mb-3">
+                                Select processing time
+                              </label>
+                              <Controller
+                                control={form.control}
+                                name="processingTime"
+                                render={({ field }) => (
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    value={String(field.value)}
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Processing time" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectGroup>
+                                        <SelectLabel>Days</SelectLabel>
+                                        <SelectItem value="3">3</SelectItem>
+                                        <SelectItem value="7">7</SelectItem>
+                                        <SelectItem value="14">14</SelectItem>
+                                        <SelectItem value="21">21</SelectItem>
+                                        <SelectItem value="30">30</SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                )}
+                              />
+                            </div>
+                          </div>
+                          <Card className="mt-4 w-full max-w-md">
+                            <CardHeader>
+                              <CardTitle className="flex items-center gap-2">
+                                <Globe className="h-5 w-5 text-primary" />
+                                Region Selection
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent className="grid gap-4">
+                              {/* Worldwide Toggle */}
+                              <div className="flex items-center space-x-3 space-y-0 rounded-lg border bg-muted/50 p-3 transition-colors">
+                                <Checkbox
+                                  id="worldwide"
+                                  checked={isAllSelected}
+                                  onCheckedChange={(checked) =>
+                                    toggleWorldwide(!!checked)
+                                  }
+                                />
+                                <Label
+                                  htmlFor="worldwide"
+                                  className="w-full cursor-pointer text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                  Worldwide
+                                </Label>
+                              </div>
+
+                              <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                  <span className="w-full border-t" />
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                  <span className="bg-background px-2 text-muted-foreground">
+                                    Individual Continents
+                                  </span>
+                                </div>
+                              </div>
+
+                              {/* List of Continents */}
+                              <div className="grid grid-cols-1 gap-3 px-1">
+                                {continents.map((continent) => (
+                                  <div
+                                    key={continent}
+                                    className="flex items-center space-x-3 space-y-0"
+                                  >
+                                    <Checkbox
+                                      id={continent}
+                                      checked={selectedLocation.includes(
+                                        continent
+                                      )}
+                                      onCheckedChange={() =>
+                                        toggleContinent(continent)
+                                      }
+                                    />
+                                    <Label
+                                      htmlFor={continent}
+                                      className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                    >
+                                      {continent}
+                                    </Label>
+                                  </div>
+                                ))}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <Button type="submit" disabled={updateLoading || deleteLoading}>
               Submit

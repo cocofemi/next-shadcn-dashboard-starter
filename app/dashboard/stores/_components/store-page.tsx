@@ -35,7 +35,7 @@ export default function StorePage({}: TUserListingPage) {
   useEffect(() => {
     if (user?.token) {
       setLoading(true);
-      getAllStores(page, limit, debouncedSearch)
+      getAllStores(page, limit, debouncedSearch, user?.token)
         .then((res) => {
           setStores(res?.stores);
           setTotalStores(res?.meta.total);

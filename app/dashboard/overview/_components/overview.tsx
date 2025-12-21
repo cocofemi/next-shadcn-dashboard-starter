@@ -67,7 +67,7 @@ export default function OverViewPage() {
 
   useEffect(() => {
     if (user?.token && user.role === 'store') {
-      getUserStore(user.userId).then((res) => {
+      getUserStore(user.userId, user?.token).then((res) => {
         setMetrics(res?.data?.metrics);
       });
     }

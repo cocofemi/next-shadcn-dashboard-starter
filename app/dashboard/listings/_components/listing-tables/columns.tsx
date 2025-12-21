@@ -57,7 +57,11 @@ export const columns: ColumnDef<Listing>[] = [
   },
   {
     accessorKey: 'description',
-    header: 'DESCRIPTION'
+    header: 'DESCRIPTION',
+    cell: ({ row }) => {
+      const description = row.getValue<string>('description');
+      return <p>{`${description.substring(0, 20)}...`}</p>;
+    }
   },
 
   {
