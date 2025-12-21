@@ -167,13 +167,14 @@ export default function EditListingForm() {
             quantity: res?.data?.listing?.quantity,
             sku: String(res?.data?.listing?.sku),
             upc: res?.data?.listing?.upc,
-            weight: res?.data?.listing?.shippingSpec?.weight,
-            height: res?.data?.listing?.shippingSpec?.height,
-            length: res?.data?.listing?.shippingSpec?.length,
-            width: res?.data?.listing?.shippingSpec?.width,
-            shippingFee: res?.data?.listing?.shippingManualSpec?.shippingFee,
+            weight: res?.data?.listing?.shippingSpec?.weight ?? 0,
+            height: res?.data?.listing?.shippingSpec?.height ?? 0,
+            length: res?.data?.listing?.shippingSpec?.length ?? 0,
+            width: res?.data?.listing?.shippingSpec?.width ?? 0,
+            shippingFee:
+              res?.data?.listing?.shippingManualSpec?.shippingFee ?? 0,
             processingTime:
-              res?.data?.listing?.shippingManualSpec?.processingTime
+              res?.data?.listing?.shippingManualSpec?.processingTime ?? 0
           });
           setShippingMode(res?.data?.listing?.shipping || 'automatic');
           setSelectedLocation(res?.data?.listing?.shippingManualSpec?.location);
