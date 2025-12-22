@@ -186,20 +186,17 @@ export function Notifications() {
                       </p>
                       {notification.name && (
                         <p className="mt-1 text-xs text-muted-foreground">
-                          <span className="font-medium">
+                          {/* <span className="font-medium">
                             {notification.name}
-                          </span>
+                          </span> */}
                           {notification.orderAmount && (
-                            <span>
-                              {' '}
-                              • ${notification.orderAmount.toFixed(2)}
-                            </span>
+                            <span>${notification.orderAmount.toFixed(2)}</span>
                           )}
                         </p>
                       )}
                       {notification?.orderId && (
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {notification.orderId}
+                          {`Order ID: ${notification.orderId}`}
                         </p>
                       )}
                       <p className="mt-2 text-xs text-muted-foreground">
