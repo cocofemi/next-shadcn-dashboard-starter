@@ -66,7 +66,7 @@ export default function ListingsPage({}: TUserListingPage) {
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading title={`Listings (${totalListings})`} description="" />
-          {user?.role === 'store' && !user?.stripeOnboardingComplete && (
+          {user?.role === 'store' && !user?.stripePayoutsEnabled && (
             <Link
               href={'/dashboard/listings/create'}
               className={cn(buttonVariants({ variant: 'default' }))}
