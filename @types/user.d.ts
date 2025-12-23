@@ -108,6 +108,16 @@ export interface ListingImage {
   url: string;
 }
 
+export interface Payout {
+  _id: string;
+  storeId: string;
+  orderId: string;
+  amount: number;
+  stripeTransferId: string;
+  status: string;
+  date: string;
+}
+
 export interface Orders {
   _id: string;
   name: string;

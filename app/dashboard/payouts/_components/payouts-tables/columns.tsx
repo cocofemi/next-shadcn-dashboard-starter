@@ -1,51 +1,49 @@
 'use client';
-import { Listing, ListingImage } from '@/@types/user';
+import { Payout } from '@/@types/user';
 import { ColumnDef } from '@tanstack/react-table';
-import Image from 'next/image';
 
-export const columns: ColumnDef<Listing>[] = [
+export const columns: ColumnDef<Payout>[] = [
   {
-    accessorKey: 'listingImage',
-    header: 'IMAGE',
+    accessorKey: 'orderId',
+    header: 'ORDER ID'
+  },
+  {
+    accessorKey: 'amount',
+    header: 'AMOUNT($)'
+  },
+  {
+    accessorKey: 'stripeTransferId',
+    header: 'TRANSFER ID'
+  },
+  {
+    accessorKey: 'status',
+    header: 'STATUS',
     cell: ({ row }) => {
-      const images = row.getValue<ListingImage[]>('listingImage');
-      const imageUrl = images?.[0]?.url || '';
+      const status = row.getValue<string>('status');
       return (
-        <div className="relative aspect-square">
-          <Image src={imageUrl} alt={'listing'} fill className="rounded-lg" />
+        <div>
+          {status === 'paid' ? (
+            <span className="me-2 rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
+              PAID
+            </span>
+          ) : status === 'pending' ? (
+            <span className="me-2 rounded bg-red-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+              PENDNG
+            </span>
+          ) : status === 'failed' ? (
+            <span className="me-2 rounded bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
+              FAILED
+            </span>
+          ) : null}
         </div>
       );
     }
   },
   {
-    accessorKey: 'listingName',
-    header: 'NAME'
-  },
-  {
-    accessorKey: 'category',
-    header: 'CATEGORY'
-  },
-  {
-    accessorKey: 'price',
-    header: 'PRICE($)'
-  },
-  {
-    accessorKey: 'quantity',
-    header: 'QUANTITY'
-  },
-  {
-    accessorKey: 'sku',
-    header: 'SKU'
-  },
-  {
-    accessorKey: 'upc',
-    header: 'UPC'
-  },
-  {
-    accessorKey: 'createdAt',
+    accessorKey: 'date',
     header: 'DATE',
     cell: ({ row }) => {
-      const order_date = row.getValue<string>('createdAt');
+      const order_date = row.getValue<string>('date');
       return (
         <p>{`${new Date(order_date).toLocaleString('en-US', {
           year: 'numeric',
@@ -54,10 +52,6 @@ export const columns: ColumnDef<Listing>[] = [
         })}`}</p>
       );
     }
-  },
-  {
-    accessorKey: 'description',
-    header: 'DESCRIPTION'
   },
 
   {

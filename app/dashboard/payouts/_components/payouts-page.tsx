@@ -9,10 +9,8 @@ import {
 } from '@/utils/store';
 import PaymentsTable from './payouts-tables';
 import React, { useEffect, useState } from 'react';
-import { CurrentUserContextType, Listing } from '@/@types/user';
+import { CurrentUserContextType, Listing, Payout } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
-import { getAllListing } from '@/utils/listings';
-import { getStoreListing } from '@/utils/store';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Plus, Loader2 } from 'lucide-react';
@@ -21,14 +19,15 @@ import {
   HoverCardContent,
   HoverCardTrigger
 } from '@/components/ui/hover-card';
+import { getAllPayouts, getStorePayouts } from '@/utils/payouts';
 
 type TUserListingPage = {};
 
 export default function PayoutsPage({}: TUserListingPage) {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
 
-  const [totalListings, setTotalListings] = useState<number>(0);
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [totalPayouts, setTotalPayouts] = useState<number>(0);
+  const [payouts, setPayouts] = useState<Payout[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(search);
@@ -48,10 +47,11 @@ export default function PayoutsPage({}: TUserListingPage) {
   useEffect(() => {
     if (user?.token && user?.role === 'admin') {
       setLoading(true);
-      getAllListing(page, limit, debouncedSearch)
+
+      getAllPayouts(page, limit, debouncedSearch, user?.token)
         .then((res) => {
-          setListings(res?.data);
-          setTotalListings(res?.meta.total);
+          setPayouts(res?.payouts);
+          setTotalPayouts(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
@@ -60,10 +60,10 @@ export default function PayoutsPage({}: TUserListingPage) {
   useEffect(() => {
     if (user?.token && user?.role === 'store') {
       setLoading(true);
-      getStoreListing(user?.storeId, page, limit, debouncedSearch)
+      getStorePayouts(user?.storeId, user?.token, page, limit, debouncedSearch)
         .then((res) => {
-          setListings(res?.data);
-          setTotalListings(res?.meta.total);
+          setPayouts(res?.payouts);
+          setTotalPayouts(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
@@ -92,12 +92,12 @@ export default function PayoutsPage({}: TUserListingPage) {
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title={`Payouts (${totalListings})`} description="" />
+          <Heading title={`Payouts (${totalPayouts})`} description="" />
           {user?.role === 'store' && !user?.stripeOnboardingComplete && (
             <HoverCard>
               <HoverCardTrigger>
                 <Button
-                  onClick={handleOnboarding}
+                  // onClick={handleOnboarding}
                   disabled={enableLoading}
                   className={cn(buttonVariants({ variant: 'default' }))}
                 >
@@ -116,8 +116,8 @@ export default function PayoutsPage({}: TUserListingPage) {
         </div>
         <Separator />
         <PaymentsTable
-          data={listings}
-          totalData={totalListings}
+          data={payouts}
+          totalData={totalPayouts}
           search={search}
           setSearch={setSearch}
           page={page}
