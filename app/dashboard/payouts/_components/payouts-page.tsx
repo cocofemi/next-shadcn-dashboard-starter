@@ -97,7 +97,7 @@ export default function PayoutsPage({}: TUserListingPage) {
             <HoverCard>
               <HoverCardTrigger>
                 <Button
-                  // onClick={handleOnboarding}
+                  onClick={handleOnboarding}
                   disabled={enableLoading}
                   className={cn(buttonVariants({ variant: 'default' }))}
                 >
