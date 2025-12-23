@@ -66,6 +66,7 @@ export default function UserAuthForm() {
           storeName: res?.data?.storeName,
           stripeAccountId: res?.data?.stripeAccountId,
           stripeOnboardingComplete: res?.data?.stripeOnboardingComplete,
+          stripePayoutsEnabled: res?.data?.stripePayoutsEnabled,
           storeAddress: res.data.storeAddress,
           description: res.data.description,
           storeEmail: res.data.storeEmail
@@ -108,6 +109,7 @@ export default function UserAuthForm() {
               storeName: res?.data?.storeName,
               stripeAccountId: res?.data?.stripeAccountId,
               stripeOnboardingComplete: res?.data?.stripeOnboardingComplete,
+              stripePayoutsEnabled: res?.data?.stripePayoutsEnabled,
               storeAddress: res.data.storeAddress,
               description: res.data.description,
               storeEmail: res.data.storeEmail
