@@ -102,7 +102,7 @@ export default function OverViewPage() {
   return (
     <PageContainer scrollable>
       <div className="space-y-2">
-        {!user?.stripePayoutsEnabled && (
+        {user?.role === 'store' && !user?.stripePayoutsEnabled && (
           <ReminderBanner
             title="Enable Payments For Your Store"
             message="You haven't enabled payments for your store, without this you won't be able to create and add listings to your store. Go to the payouts tab, click on enable payouts and start the process."
