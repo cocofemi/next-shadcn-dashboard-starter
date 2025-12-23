@@ -270,7 +270,11 @@ export const steps = [
   },
   {
     target: '.sidebar-icon-wallet',
-    content: 'Here you can manage and track your Orders.'
+    content: 'Here you can manage and track your orders.'
+  },
+  {
+    target: '.sidebar-icon-pay',
+    content: 'Here you enable payouts for your store'
   },
   {
     target: '.sidebar-icon-product',

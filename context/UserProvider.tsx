@@ -18,7 +18,9 @@ function UserProvider({ children }: { children: React.ReactNode }) {
     storeId: '',
     storeName: '',
     stripeAccountId: '',
+    stripePayoutsEnabled: false,
     stripeOnboardingComplete: false,
+
     storeAddress: [],
     description: '',
     storeEmail: ''
@@ -47,6 +49,7 @@ function UserProvider({ children }: { children: React.ReactNode }) {
                 storeId: res.data.storeId,
                 storeName: res.data.storeName,
                 stripeAccountId: res.data.stripeAccountId,
+                stripePayoutsEnabled: res.data.stripePayoutsEnabled,
                 stripeOnboardingComplete: res?.data?.stripeOnboardingComplete,
                 storeAddress: res.data.storeAddress,
                 description: res.data.description,

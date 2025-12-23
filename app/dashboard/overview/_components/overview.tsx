@@ -34,6 +34,7 @@ import {
   getStoreOrders,
   getUserStore
 } from '@/utils/store';
+import { ReminderBanner } from '@/components/reminder-banner';
 
 export default function OverViewPage() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
@@ -101,6 +102,13 @@ export default function OverViewPage() {
   return (
     <PageContainer scrollable>
       <div className="space-y-2">
+        {!user?.stripePayoutsEnabled && (
+          <ReminderBanner
+            title="Enable Payments For Your Store"
+            message="You haven't enabled payments for your store, without this you won't be able to create and add listings to your store. Go to the payouts tab, click on enable payouts and start the process."
+            variant="info"
+          />
+        )}
         <div className="flex items-center justify-between space-y-2">
           <h2 className="tour-end text-2xl font-bold tracking-tight">
             Hi, Welcome back 👋
@@ -110,6 +118,7 @@ export default function OverViewPage() {
             <Button>Download</Button>
           </div> */}
         </div>
+
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>

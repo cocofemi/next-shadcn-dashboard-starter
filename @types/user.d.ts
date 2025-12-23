@@ -8,6 +8,7 @@ export interface IUser {
   storeId: string;
   storeName: string;
   stripeAccountId: string;
+  stripePayoutsEnabled: boolean;
   stripeOnboardingComplete: boolean;
   storeAddress: Address[];
   description: string;
