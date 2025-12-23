@@ -53,6 +53,7 @@ export default function OverViewPage() {
   useEffect(() => {
     if (user?.token && user.role === 'admin') {
       getMetrics(user?.token).then((res) => {
+        console.log(res);
         setMetrics(res?.data);
       });
     }
