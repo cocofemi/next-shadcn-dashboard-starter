@@ -34,6 +34,7 @@ export default function PayoutsPage({}: TUserListingPage) {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [enableLoading, setEnableLoading] = useState<boolean>(false);
+  const [payoutEnabled, setPayoutEnabled] = useState(false);
 
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedSearch(search), 600);
@@ -81,38 +82,51 @@ export default function PayoutsPage({}: TUserListingPage) {
   };
 
   useEffect(() => {
-    if (user?.token) {
-      storePayoutCompleteCheck(user?.storeId, user?.token).then(() => {
-        console.log('Success');
-      });
-    }
-  }, [user]);
+    if (!user?.token && user?.role === 'store') return;
 
+    const runCheck = async () => {
+      const completed = await storePayoutCompleteCheck(
+        user.storeId,
+        user.token
+      );
+
+      console.log(completed);
+
+      if (completed) {
+        setPayoutEnabled(true);
+      }
+    };
+
+    runCheck();
+  }, [user?.token]);
+
+  // console.log(payoutEnabled);
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading title={`Payouts (${totalPayouts})`} description="" />
-          {user?.role === 'store' && !user?.stripeOnboardingComplete && (
-            <HoverCard>
-              <HoverCardTrigger>
-                <Button
-                  onClick={handleOnboarding}
-                  disabled={enableLoading}
-                  className={cn(buttonVariants({ variant: 'default' }))}
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Enable payments{' '}
-                  {enableLoading && <Loader2 className="animate-spin" />}
-                </Button>
-              </HoverCardTrigger>
-              <HoverCardContent>
-                Enable payments to start receiving payouts directly to your
-                bank. We use stripe to securely handle all transactions. Make
-                sure you have all your business details ready and a valid bank
-                account.
-              </HoverCardContent>
-            </HoverCard>
-          )}
+          {user?.role === 'store' &&
+            user?.stripeOnboardingComplete === false && (
+              <HoverCard>
+                <HoverCardTrigger>
+                  <Button
+                    onClick={handleOnboarding}
+                    disabled={enableLoading}
+                    className={cn(buttonVariants({ variant: 'default' }))}
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Enable payments{' '}
+                    {enableLoading && <Loader2 className="animate-spin" />}
+                  </Button>
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  Enable payments to start receiving payouts directly to your
+                  bank. We use stripe to securely handle all transactions. Make
+                  sure you have all your business details ready and a valid bank
+                  account.
+                </HoverCardContent>
+              </HoverCard>
+            )}
         </div>
         <Separator />
         <PaymentsTable

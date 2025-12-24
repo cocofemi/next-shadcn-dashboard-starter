@@ -13,7 +13,7 @@ export const columns: ColumnDef<Payout>[] = [
   },
   {
     accessorKey: 'stripeTransferId',
-    header: 'TRANSFER ID'
+    header: 'STRIPE PAYMENT ID'
   },
   {
     accessorKey: 'status',

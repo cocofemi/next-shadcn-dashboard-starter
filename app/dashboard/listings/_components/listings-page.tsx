@@ -61,12 +61,14 @@ export default function ListingsPage({}: TUserListingPage) {
     }
   }, [user, page, debouncedSearch]);
 
+  console.log(user?.role);
+
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading title={`Listings (${totalListings})`} description="" />
-          {user?.role === 'store' && user?.stripePayoutsEnabled === false && (
+          {user?.role === 'store' && user?.stripePayoutsEnabled === true && (
             <Link
               href={'/dashboard/listings/create'}
               className={cn(buttonVariants({ variant: 'default' }))}
