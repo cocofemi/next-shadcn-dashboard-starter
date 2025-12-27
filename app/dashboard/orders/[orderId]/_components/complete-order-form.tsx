@@ -65,15 +65,14 @@ export default function CompleteOrderForm() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     const { tracking_number, ship_provider, shipDate, notes } = values;
-    if (user?.token) {
+    if (user) {
       completeOrder(
         id,
         user?.storeId,
         tracking_number,
         ship_provider,
         shipDate,
-        notes,
-        user?.token
+        notes
       )
         .then((res) => {
           setLoading(false);

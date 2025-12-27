@@ -51,8 +51,8 @@ export default function OverViewPage() {
   const [pendingOrders, setPendingOrders] = useState<number>(0);
 
   useEffect(() => {
-    if (user?.token && user.role === 'admin') {
-      getMetrics(user?.token).then((res) => {
+    if (user && user.role === 'admin') {
+      getMetrics().then((res) => {
         console.log(res);
         setMetrics(res?.data);
       });
@@ -60,24 +60,24 @@ export default function OverViewPage() {
   }, [user]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'admin') {
-      getAllOrders(page, limit, user?.token).then((res) => {
+    if (user && user.role === 'admin') {
+      getAllOrders(page, limit).then((res) => {
         setOrders(res?.orders);
       });
     }
   }, [user, page]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'store') {
-      getUserStore(user.userId, user?.token).then((res) => {
+    if (user && user.role === 'store') {
+      getUserStore(user.userId).then((res) => {
         setMetrics(res?.data?.metrics);
       });
     }
   }, [user]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'store') {
-      getStoreOrders(user?.storeId, user.token, page, limit).then((res) => {
+    if (user && user.role === 'store') {
+      getStoreOrders(user?.storeId, page, limit).then((res) => {
         setOrders(res?.data);
         setPendingOrders(res?.meta?.pending);
       });
@@ -85,7 +85,7 @@ export default function OverViewPage() {
   }, [user]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'store') {
+    if (user && user.role === 'store') {
       getStoreListing(user?.storeId, page, limit).then((res) => {
         setTotalStoreListing(res?.meta?.total);
       });
@@ -93,8 +93,8 @@ export default function OverViewPage() {
   }, [user]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'admin') {
-      getAllOrders(page, limit, user?.token).then((res) => {
+    if (user && user.role === 'admin') {
+      getAllOrders(page, limit).then((res) => {
         setOrders(res?.orders);
       });
     }

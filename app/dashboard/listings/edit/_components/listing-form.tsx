@@ -335,7 +335,7 @@ export default function EditListingForm() {
     // const dataObject = Object.fromEntries(formData.entries());
     // console.log(dataObject);
 
-    updateListing(formData, user?.token, id)
+    updateListing(formData, id)
       .then((res) => {
         setUpdateLoading(false);
         router.back();
@@ -352,7 +352,7 @@ export default function EditListingForm() {
   }
 
   function handleDelete(): void {
-    deleteListing(user?.token, id, user?.userId).then((res) => {
+    deleteListing(id, user?.userId).then((res) => {
       router.back();
       setDeleteLoading(true);
     });

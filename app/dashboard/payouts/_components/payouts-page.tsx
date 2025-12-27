@@ -46,10 +46,10 @@ export default function PayoutsPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'admin') {
+    if (user?.role === 'admin') {
       setLoading(true);
 
-      getAllPayouts(page, limit, debouncedSearch, user?.token)
+      getAllPayouts(page, limit, debouncedSearch)
         .then((res) => {
           setPayouts(res?.payouts);
           setTotalPayouts(res?.meta.total);
@@ -59,9 +59,9 @@ export default function PayoutsPage({}: TUserListingPage) {
   }, [user, page, debouncedSearch]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'store') {
+    if (user?.role === 'store') {
       setLoading(true);
-      getStorePayouts(user?.storeId, user?.token, page, limit, debouncedSearch)
+      getStorePayouts(user?.storeId, page, limit, debouncedSearch)
         .then((res) => {
           setPayouts(res?.payouts);
           setTotalPayouts(res?.meta.total);
@@ -72,7 +72,7 @@ export default function PayoutsPage({}: TUserListingPage) {
 
   const handleOnboarding = () => {
     setEnableLoading(true);
-    storePaymentOnboarding(user?.storeId, user?.token)
+    storePaymentOnboarding(user?.storeId)
       .then((res) => {
         console.log(res);
         if (res?.url) window.location.href = res?.url;
@@ -82,13 +82,10 @@ export default function PayoutsPage({}: TUserListingPage) {
   };
 
   useEffect(() => {
-    if (!user?.token && user?.role === 'store') return;
+    if (user?.role === 'store') return;
 
     const runCheck = async () => {
-      const completed = await storePayoutCompleteCheck(
-        user.storeId,
-        user.token
-      );
+      const completed = await storePayoutCompleteCheck(user.storeId);
 
       console.log(completed);
 
@@ -98,7 +95,7 @@ export default function PayoutsPage({}: TUserListingPage) {
     };
 
     runCheck();
-  }, [user?.token]);
+  }, []);
 
   // console.log(payoutEnabled);
   return (

@@ -33,9 +33,9 @@ export default function UsersPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token) {
+    if (user) {
       setLoading(true);
-      getAllUsers(page, user?.token, limit, debouncedSearch)
+      getAllUsers(page, limit, debouncedSearch)
         .then((res) => {
           setUsers(res?.users);
           setTotalUsers(res?.meta.total);

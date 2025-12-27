@@ -76,8 +76,8 @@ export function PieGraph() {
 
   React.useEffect(() => {
     setLoading(true);
-    if (user?.token && user?.role === 'store') {
-      getStoreFulfillments(user?.storeId, Number(days), user?.token)
+    if (user && user?.role === 'store') {
+      getStoreFulfillments(user?.storeId, Number(days))
         .then((res) => {
           setLoading(false);
           setData(res?.data);
@@ -86,8 +86,8 @@ export function PieGraph() {
           console.log('Problem fetching revenue', e);
           setLoading(false);
         });
-    } else if (user?.token) {
-      getAllFulfillments(Number(days), user?.token)
+    } else if (user?.role === 'admin') {
+      getAllFulfillments(Number(days))
         .then((res) => {
           setLoading(false);
           setData(res?.data);
@@ -97,7 +97,7 @@ export function PieGraph() {
           setLoading(false);
         });
     }
-  }, [user?.token, days]);
+  }, [, days]);
 
   return (
     <Card className="flex flex-col">

@@ -3,7 +3,6 @@ export interface IUser {
   lastName: string;
   email: string;
   userId: string;
-  token: string;
   role: string;
   storeId: string;
   storeName: string;

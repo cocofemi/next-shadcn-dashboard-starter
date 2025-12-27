@@ -2,7 +2,6 @@ import axios from 'axios';
 
 export const getAllUsers = async (
   page: number,
-  token: string,
   limit: number,
   search: string = ''
 ) => {
@@ -10,10 +9,10 @@ export const getAllUsers = async (
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/user/getall?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -21,15 +20,15 @@ export const getAllUsers = async (
   }
 };
 
-export const getUser = async (id: any, token: string) => {
+export const getUser = async (id: any) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/user?user_id=${id}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -37,15 +36,14 @@ export const getUser = async (id: any, token: string) => {
   }
 };
 
-export const updateUser = async (formData: any, id: any, token: string) => {
+export const updateUser = async (formData: any, id: any) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/user/update?user_id=${id}`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+      headers: {},
       method: 'POST',
-      data: formData
+      data: formData,
+      withCredentials: true
     });
     return response;
   } catch (error) {

@@ -161,8 +161,8 @@ export function BarGraph() {
 
   React.useEffect(() => {
     setLoading(true);
-    if (user?.token && user?.role === 'store') {
-      getStoreTopProducts(user?.storeId, Number(limit), user?.token)
+    if (user && user?.role === 'store') {
+      getStoreTopProducts(user?.storeId, Number(limit))
         .then((res) => {
           setLoading(false);
           setProducts(res?.data);
@@ -172,7 +172,7 @@ export function BarGraph() {
           setLoading(false);
         });
     }
-  }, [user?.token, limit]);
+  }, [, limit]);
 
   return (
     <>

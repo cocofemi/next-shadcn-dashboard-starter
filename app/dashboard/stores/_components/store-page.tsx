@@ -33,9 +33,9 @@ export default function StorePage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token) {
+    if (user?.role === 'admin') {
       setLoading(true);
-      getAllStores(page, limit, debouncedSearch, user?.token)
+      getAllStores(page, limit, debouncedSearch)
         .then((res) => {
           setStores(res?.stores);
           setTotalStores(res?.meta.total);

@@ -64,7 +64,7 @@ export default function UserDetailForm() {
   });
 
   React.useEffect(() => {
-    getUser(id, user?.token).then((res) => {
+    getUser(id).then((res) => {
       setLoading(false);
       console.log(res);
       form.reset({
@@ -83,7 +83,7 @@ export default function UserDetailForm() {
     const formData = new FormData();
     formData.append('role', values.role);
 
-    updateUser(formData, id, user?.token).then((res) => {
+    updateUser(formData, id).then((res) => {
       console.log(res);
       setSubmitLoading(false);
       router.back();

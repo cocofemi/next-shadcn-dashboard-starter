@@ -38,7 +38,7 @@ export default function ListingsPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'admin') {
+    if (user && user?.role === 'admin') {
       setLoading(true);
       getAllListing(page, limit, debouncedSearch)
         .then((res) => {
@@ -50,7 +50,7 @@ export default function ListingsPage({}: TUserListingPage) {
   }, [user, page, debouncedSearch]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'store') {
+    if (user && user?.role === 'store') {
       setLoading(true);
       getStoreListing(user?.storeId, page, limit, debouncedSearch)
         .then((res) => {

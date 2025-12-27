@@ -13,7 +13,6 @@ function UserProvider({ children }: { children: React.ReactNode }) {
     lastName: '',
     email: '',
     userId: '',
-    token: '',
     role: '',
     storeId: '',
     storeName: '',
@@ -36,7 +35,7 @@ function UserProvider({ children }: { children: React.ReactNode }) {
         const parsed = typeof data === 'string' ? JSON.parse(data) : data;
         setUser(parsed);
         //Fetch fresh user data from backend
-        getUser(parsed.userId, parsed.token)
+        getUser(parsed.userId)
           .then((res) => {
             if (res?.data) {
               const userData: IUser = {
@@ -44,7 +43,6 @@ function UserProvider({ children }: { children: React.ReactNode }) {
                 lastName: res.data.lastName,
                 email: res.data.email,
                 userId: res.data.userId,
-                token: res.data.token,
                 role: res.data.role,
                 storeId: res.data.storeId,
                 storeName: res.data.storeName,

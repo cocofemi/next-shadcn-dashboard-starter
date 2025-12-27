@@ -81,7 +81,7 @@ export default function CreateListingForm() {
       formData.append('blogImage', image);
     }
 
-    createBlog(formData, user?.token)
+    createBlog(formData)
       .then((res) => {
         console.log(res);
         setLoading(false);

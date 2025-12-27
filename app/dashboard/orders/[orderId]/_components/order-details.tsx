@@ -32,16 +32,16 @@ export default function OrderDetails() {
   const [totalPrice, setTotalPrice] = React.useState(0);
 
   React.useEffect(() => {
-    if (user?.token && user?.role === 'admin') {
-      getOrder(orderId, user?.token).then((res) => {
+    if (user && user?.role === 'admin') {
+      getOrder(orderId).then((res) => {
         setOrder(res?.data);
       });
     }
   }, [user]);
 
   React.useEffect(() => {
-    if (user?.token && user?.role === 'store') {
-      getStoreOrderDetails(user?.storeId, orderId, user?.token).then((res) => {
+    if (user && user?.role === 'store') {
+      getStoreOrderDetails(user?.storeId, orderId).then((res) => {
         setOrder(res?.data);
         // console.log(res?.data);
       });
@@ -60,8 +60,8 @@ export default function OrderDetails() {
   }, [order]); // This effect depends on `order`
 
   React.useEffect(() => {
-    if (user?.token && order?.item?.length > 0) {
-      getShippingLabel(order?._id, user?.token)
+    if (user && order?.item?.length > 0) {
+      getShippingLabel(order?._id)
         .then((res) => {
           setShippingLabel(res?.data);
         })

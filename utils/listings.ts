@@ -19,15 +19,14 @@ export const getAllListing = async (
   }
 };
 
-export const createListing = async (formData: any, token: string) => {
+export const createListing = async (formData: any) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/listing/create`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+      headers: {},
       method: 'POST',
-      data: formData
+      data: formData,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -50,19 +49,14 @@ export const getListing = async (listingId: any) => {
   }
 };
 
-export const updateListing = async (
-  formData: any,
-  token: string,
-  listingId: any
-) => {
+export const updateListing = async (formData: any, listingId: any) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/listing/update?id=${listingId}`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+      headers: {},
       method: 'PATCH',
-      data: formData
+      data: formData,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -70,18 +64,13 @@ export const updateListing = async (
   }
 };
 
-export const deleteListing = async (
-  token: string,
-  listingId: any,
-  userId: string
-) => {
+export const deleteListing = async (listingId: any, userId: string) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/listing/delete?id=${listingId}&userId=${userId}`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      method: 'DELETE'
+      headers: {},
+      method: 'DELETE',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {

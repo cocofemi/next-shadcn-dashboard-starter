@@ -3,17 +3,16 @@ import axios from 'axios';
 export const getAllPayouts = async (
   page: number,
   limit: number,
-  search: string = '',
-  token: string
+  search: string = ''
 ) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/stores/payouts/all?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -23,7 +22,6 @@ export const getAllPayouts = async (
 
 export const getStorePayouts = async (
   storeId: string,
-  token: string,
   page: number,
   limit: number,
   search: string = ''
@@ -32,10 +30,10 @@ export const getStorePayouts = async (
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/stores/${storeId}/payouts?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {

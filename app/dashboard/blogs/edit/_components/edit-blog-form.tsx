@@ -116,7 +116,7 @@ export default function EditBlogForm() {
       formData.append('blogImage', file);
     }
 
-    updateBlog(formData, user?.token, id)
+    updateBlog(formData, id)
       .then((res) => {
         console.log(res);
         setUpdateLoading(false);
@@ -129,7 +129,7 @@ export default function EditBlogForm() {
 
   function handleDelete(): void {
     setDeleteLoading(true);
-    deleteBlog(id, user?.token).then((res) => {
+    deleteBlog(id).then((res) => {
       router.back();
       setDeleteLoading(false);
     });

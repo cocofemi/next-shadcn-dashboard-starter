@@ -136,7 +136,7 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
       }
     ];
 
-    getShippingRates(fromAddress, toAddress, parcels, user?.token)
+    getShippingRates(fromAddress, toAddress, parcels)
       .then((res) => {
         if (res?.rates.length === 0) {
           setRateError(
@@ -155,7 +155,7 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
   const onError = (err: any) => {};
   const handleBuyLabel = () => {
     setLoading(true);
-    buyLabel(chooseRate, order?._id, user?.storeId, user?.token)
+    buyLabel(chooseRate, order?._id, user?.storeId)
       .then((res) => {
         if (res?.url) window.location.href = res?.url;
         setLoading(false);

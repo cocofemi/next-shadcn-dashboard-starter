@@ -240,7 +240,7 @@ export default function CreateListingForm() {
       formData.append('images', image);
     }
 
-    createListing(formData, user?.token)
+    createListing(formData)
       .then((res) => {
         console.log(res);
         setLoading(false);

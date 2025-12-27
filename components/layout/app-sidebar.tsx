@@ -65,13 +65,14 @@ export default function AppSidebar() {
   const pathname = usePathname();
 
   const handleLogout = () => {
-    cookies.remove('user', { path: '/' });
+    cookies.remove('mehchant_access', { path: '/' });
+    cookies.remove('mechchant_admin_user', { path: '/' });
     router.push('/');
   };
 
   React.useEffect(() => {
     const hasSeenTour = localStorage.getItem('storeTourCompleted');
-    if (user?.token) {
+    if (user) {
       getStoreListing(user?.storeId, 1, 5).then((res) => {
         if (user?.role === 'store') {
           if (res?.data?.length === 0 && !hasSeenTour) {

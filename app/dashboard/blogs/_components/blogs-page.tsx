@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { getBlogs } from '@/utils/blogs';
-import { Spinner } from '@/components/ui/spinner';
 
 type TUserListingPage = {};
 
@@ -38,7 +37,7 @@ export default function BlogsPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token) {
+    if (user?.role === 'admin') {
       setLoading(true);
       getBlogs(debouncedSearch)
         .then((res) => {

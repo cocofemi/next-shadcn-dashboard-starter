@@ -47,14 +47,14 @@ export function Notifications() {
     setNotifications((prev) =>
       prev.map((n) => (n._id === id ? { ...n, read: true } : n))
     );
-    markNotificationRead(id, user?.storeId, user?.token)
+    markNotificationRead(id, user?.storeId)
       .then(() => setRefresh((prev) => !prev))
       .catch((err) => console.error('Error marking as read:', err));
   };
 
   const markAllAsRead = () => {
     setNotifications(notifications.map((n) => ({ ...n, read: true })));
-    markAllNotificationsAsRead(user?.storeId, user?.token)
+    markAllNotificationsAsRead(user?.storeId)
       .then(() => setRefresh((prev) => !prev))
       .catch((err) => console.error('Error marking all as read:', err));
   };
@@ -92,9 +92,9 @@ export function Notifications() {
   };
 
   useEffect(() => {
-    if (user?.token && user?.storeId) {
+    if (user?.storeId) {
       setIsLoading(true);
-      getNotifications(user.storeId, user.token)
+      getNotifications(user.storeId)
         .then((res) => {
           if (res?.data) {
             setNotifications(res.data);
@@ -105,7 +105,7 @@ export function Notifications() {
     } else {
       setIsLoading(false);
     }
-  }, [user?.token, user?.storeId, refresh]);
+  }, [, user?.storeId, refresh]);
 
   useEffect(() => {
     if (!user?.storeId) return;
