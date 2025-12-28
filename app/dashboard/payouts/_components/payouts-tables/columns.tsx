@@ -1,6 +1,7 @@
 'use client';
 import { Payout } from '@/@types/user';
 import { ColumnDef } from '@tanstack/react-table';
+import { CellAction } from './cell-action';
 
 export const columns: ColumnDef<Payout>[] = [
   {
@@ -8,11 +9,11 @@ export const columns: ColumnDef<Payout>[] = [
     header: 'ORDER ID'
   },
   {
-    accessorKey: 'amount',
+    accessorKey: 'payout',
     header: 'AMOUNT($)'
   },
   {
-    accessorKey: 'stripeTransferId',
+    accessorKey: 'transferId',
     header: 'STRIPE PAYMENT ID'
   },
   {
@@ -40,10 +41,10 @@ export const columns: ColumnDef<Payout>[] = [
     }
   },
   {
-    accessorKey: 'date',
+    accessorKey: 'createdAt',
     header: 'DATE',
     cell: ({ row }) => {
-      const order_date = row.getValue<string>('date');
+      const order_date = row.getValue<string>('createdAt');
       return (
         <p>{`${new Date(order_date).toLocaleString('en-US', {
           year: 'numeric',
@@ -55,7 +56,8 @@ export const columns: ColumnDef<Payout>[] = [
   },
 
   {
-    id: 'actions'
-    //cell: ({ row }) => <CellAction data={row.original} />
+    id: 'actions',
+    header: 'ACTIONS',
+    cell: ({ row }) => <CellAction data={row.original} />
   }
 ];

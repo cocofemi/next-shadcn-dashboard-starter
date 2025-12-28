@@ -40,3 +40,19 @@ export const getStorePayouts = async (
     return error;
   }
 };
+
+export const getPayout = async (id: any) => {
+  try {
+    const response = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/payout?id=${id}`,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'GET',
+      withCredentials: true
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};

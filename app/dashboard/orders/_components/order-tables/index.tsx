@@ -42,6 +42,7 @@ export default function OrdersTable({
       <div className="flex flex-wrap items-center gap-4">
         <DataTableSearch
           searchKey="name"
+          placeholder="Search by id, email, name ..."
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           // setPage={setPage}

@@ -43,6 +43,7 @@ export default function UsersTable({
       <div className="flex flex-wrap items-center gap-4">
         <DataTableSearch
           searchKey="name"
+          placeholder="Search by name, email ..."
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           // setPage={setPage}

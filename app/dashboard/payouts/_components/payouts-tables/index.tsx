@@ -43,6 +43,7 @@ export default function PaymentsTable({
       <div className="flex flex-wrap items-center gap-4">
         <DataTableSearch
           searchKey="name"
+          placeholder="Search by order id, stripe payment Id, status ..."
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           // setPage={setPage}
