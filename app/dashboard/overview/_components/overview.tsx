@@ -35,6 +35,7 @@ import {
   getUserStore
 } from '@/utils/store';
 import { ReminderBanner } from '@/components/reminder-banner';
+import FloatingChatBot from '@/components/chat-bot';
 
 export default function OverViewPage() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;

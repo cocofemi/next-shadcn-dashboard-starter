@@ -1,3 +1,4 @@
+import FloatingChatBot from '@/components/chat-bot';
 import KBar from '@/components/kbar';
 import AppSidebar from '@/components/layout/app-sidebar';
 import Header from '@/components/layout/header';
@@ -22,6 +23,7 @@ export default async function DashboardLayout({
     <KBar>
       <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar />
+        {/* <FloatingChatBot /> */}
         <SidebarInset>
           <Header />
           {/* page main content */}
