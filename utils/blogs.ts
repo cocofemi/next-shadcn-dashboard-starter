@@ -7,6 +7,15 @@ export const getBlogs = async (search: string = '') => {
   return response.data;
 };
 
+export const getWailtists = async () => {
+  const response = await axios({
+    url: `${process.env.NEXT_PUBLIC_SERVER_URL}/waitlist`,
+    method: 'GET',
+    withCredentials: true
+  });
+  return response.data;
+};
+
 export const createBlog = async (formData: any) => {
   try {
     const response = await axios({

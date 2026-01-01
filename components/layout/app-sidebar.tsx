@@ -32,10 +32,8 @@ import {
 import { navItems, storenavItems, steps } from '@/constants/data';
 import {
   BadgeCheck,
-  Bell,
   ChevronRight,
   ChevronsUpDown,
-  CreditCard,
   GalleryVerticalEnd,
   LogOut
 } from 'lucide-react';
@@ -72,7 +70,7 @@ export default function AppSidebar() {
 
   React.useEffect(() => {
     const hasSeenTour = localStorage.getItem('storeTourCompleted');
-    if (user) {
+    if (user?.userId) {
       getStoreListing(user?.storeId, 1, 5).then((res) => {
         if (user?.role === 'store') {
           if (res?.data?.length === 0 && !hasSeenTour) {
@@ -84,7 +82,7 @@ export default function AppSidebar() {
         }
       });
     }
-  }, [user]);
+  }, [user?.userId]);
 
   const handleTourEnd = () => {
     setRunTour(false);

@@ -156,6 +156,14 @@ export const navItems: NavItem[] = [
     isActive: false,
     items: [] // No child items
   },
+  {
+    title: 'Waitlists',
+    url: '/dashboard/waitlists',
+    icon: 'list',
+    shortcut: ['b', 'b'],
+    isActive: false,
+    items: [] // No child items
+  },
   // {
   //   title: 'Product',
   //   url: '/dashboard/product',

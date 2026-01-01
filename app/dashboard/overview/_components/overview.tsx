@@ -91,7 +91,7 @@ export default function OverViewPage() {
         setTotalStoreListing(res?.meta?.total);
       });
     }
-  }, [user]);
+  }, [user?.userId]);
 
   useEffect(() => {
     if (user && user.role === 'admin') {

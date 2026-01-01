@@ -74,13 +74,10 @@ export function DataTable<
   pageSizeOptions = [10, 20, 30, 40, 50],
   page,
   limit,
-  url,
   setPage,
   setLimit,
   loading
 }: DataTableProps<TData, TValue>) {
-  const { user } = React.useContext(UserContext) as CurrentUserContextType;
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
     parseAsInteger.withOptions({ shallow: false }).withDefault(1)

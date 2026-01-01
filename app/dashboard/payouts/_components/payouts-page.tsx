@@ -82,22 +82,37 @@ export default function PayoutsPage({}: TUserListingPage) {
   };
 
   useEffect(() => {
-    if (user?.role === 'store') return;
+    if (user?.role === 'admin') return;
 
-    const runCheck = async () => {
-      const completed = await storePayoutCompleteCheck(user.storeId);
+    // const runCheck = async () => {
+    //   const completed = await storePayoutCompleteCheck(user?.storeId);
 
-      console.log(completed);
+    //   console.log(completed);
 
-      if (completed) {
-        setPayoutEnabled(true);
-      }
-    };
+    //   if (completed) {
+    //     setPayoutEnabled(true);
+    //   }
+    // };
 
-    runCheck();
-  }, []);
+    // runCheck();
+  }, [user]);
 
-  // console.log(payoutEnabled);
+  useEffect(() => {
+    if (loading) return;
+    if (user?.role === 'admin') return;
+
+    if (user?.userId) {
+      const runCheck = async () => {
+        const completed = await storePayoutCompleteCheck(user?.storeId);
+
+        console.log(completed);
+
+        setPayoutEnabled(completed?.stripeOnboardingComplete);
+      };
+
+      runCheck();
+    }
+  }, [loading, user?.userId]);
   return (
     <PageContainer scrollable>
       <div className="space-y-4">

@@ -3,25 +3,24 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import ListingTable from './listing-tables';
+import BlogsTable from './blogs-tables';
 import React, { useEffect, useState } from 'react';
-import { CurrentUserContextType, Listing } from '@/@types/user';
+import { Blogs, CurrentUserContextType, Waitlist } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
-import { getAllListing } from '@/utils/listings';
-import { getStoreListing } from '@/utils/store';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { Spinner } from '@/components/ui/spinner';
+import { getBlogs, getWailtists } from '@/utils/blogs';
 
 type TUserListingPage = {};
 
-export default function ListingsPage({}: TUserListingPage) {
+export default function WaitlistsPage({}: TUserListingPage) {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
 
-  const [totalListings, setTotalListings] = useState<number>(0);
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [totalWaitlists, setTotalWaitlists] = useState<number>(0);
+
+  const [waitlists, setWaitlists] = useState<Waitlist[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(search);
@@ -38,47 +37,27 @@ export default function ListingsPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user && user?.role === 'admin') {
+    if (user?.role === 'admin') {
       setLoading(true);
-      getAllListing(page, limit, debouncedSearch)
+      getWailtists()
         .then((res) => {
-          setListings(res?.data);
-          setTotalListings(res?.meta.total);
+          setWaitlists(res?.waitlists);
+          setTotalWaitlists(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
-  }, [user, page, debouncedSearch]);
-
-  useEffect(() => {
-    if (user && user?.role === 'store') {
-      setLoading(true);
-      getStoreListing(user?.storeId, page, limit, debouncedSearch)
-        .then((res) => {
-          setListings(res?.data);
-          setTotalListings(res?.meta.total);
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [user?.userId, page, debouncedSearch]);
+  }, [page, debouncedSearch]);
 
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title={`Listings (${totalListings})`} description="" />
-          {user?.role === 'store' && user?.stripePayoutsEnabled === true && (
-            <Link
-              href={'/dashboard/listings/create'}
-              className={cn(buttonVariants({ variant: 'default' }))}
-            >
-              <Plus className="mr-2 h-4 w-4" /> Add New
-            </Link>
-          )}
+          <Heading title={`Waitlists (${totalWaitlists})`} description="" />
         </div>
         <Separator />
-        <ListingTable
-          data={listings}
-          totalData={totalListings}
+        <BlogsTable
+          data={waitlists}
+          totalData={totalWaitlists}
           search={search}
           setSearch={setSearch}
           page={page}

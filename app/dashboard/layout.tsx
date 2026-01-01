@@ -23,7 +23,7 @@ export default async function DashboardLayout({
     <KBar>
       <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar />
-        {/* <FloatingChatBot /> */}
+        <FloatingChatBot />
         <SidebarInset>
           <Header />
           {/* page main content */}

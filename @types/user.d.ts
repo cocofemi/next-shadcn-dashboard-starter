@@ -103,6 +103,13 @@ export interface Blogs {
   createdAt: string;
 }
 
+export interface Waitlist {
+  _id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
 export interface ListingImage {
   _id: string;
   url: string;

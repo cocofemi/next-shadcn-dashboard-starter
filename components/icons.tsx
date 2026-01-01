@@ -33,7 +33,8 @@ import {
   UserX2Icon,
   Wallet,
   X,
-  CircleDollarSign
+  CircleDollarSign,
+  List
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -43,6 +44,7 @@ export const Icons = {
   logo: Command,
   login: LogIn,
   close: X,
+  list: List,
   product: LucideShoppingBag,
   spinner: Loader2,
   kanban: CircuitBoardIcon,
