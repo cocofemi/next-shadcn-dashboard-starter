@@ -52,40 +52,37 @@ export default function UserAuthForm() {
     setLoading(true);
     login(data.email, data.password).then((res: any) => {
       if (res.status === 200) {
-        cookies.set('mechchant_admin_user', JSON.stringify(res.data), {
-          path: '/'
-        });
-        const userData: IUser = {
-          firstName: res?.data?.firstName,
-          lastName: res?.data?.lastName,
-          email: res?.data?.email,
-          userId: res?.data?.userId,
-          role: res?.data?.role,
-          storeId: res?.data?.storeId,
-          storeName: res?.data?.storeName,
-          stripeAccountId: res?.data?.stripeAccountId,
-          stripeOnboardingComplete: res?.data?.stripeOnboardingComplete,
-          stripePayoutsEnabled: res?.data?.stripePayoutsEnabled,
-          storeAddress: res.data.storeAddress,
-          description: res.data.description,
-          storeEmail: res.data.storeEmail
-        };
-        setUser(userData);
-        setLoading(false);
-        toast.success('Signed In Successfully!');
-        router.push('/dashboard/overview');
+        if (res?.data?.storeId === undefined) {
+          router.push('/no-store');
+        } else {
+          cookies.set('mechchant_admin_user', JSON.stringify(res.data), {
+            path: '/'
+          });
+          const userData: IUser = {
+            firstName: res?.data?.firstName,
+            lastName: res?.data?.lastName,
+            email: res?.data?.email,
+            userId: res?.data?.userId,
+            role: res?.data?.role,
+            storeId: res?.data?.storeId,
+            storeName: res?.data?.storeName,
+            stripeAccountId: res?.data?.stripeAccountId,
+            stripeOnboardingComplete: res?.data?.stripeOnboardingComplete,
+            stripePayoutsEnabled: res?.data?.stripePayoutsEnabled,
+            storeAddress: res.data.storeAddress,
+            description: res.data.description,
+            storeEmail: res.data.storeEmail
+          };
+          setUser(userData);
+          setLoading(false);
+          toast.success('Signed In Successfully!');
+          router.push('/dashboard/overview');
+        }
       } else {
         setLoading(false);
         setError('Invalid Email address or Password');
       }
     });
-    // startTransition(() => {
-    //   signIn('credentials', {
-    //     email: data.email,
-    //     callbackUrl: callbackUrl ?? '/dashboard'
-    //   });
-    //   toast.success('Signed In Successfully!');
-    // });
   };
   function handleGoogleLogin(token: string | undefined) {
     googleLogin(token)

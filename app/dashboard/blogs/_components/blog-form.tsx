@@ -36,7 +36,7 @@ const formSchema = z.object({
   })
 });
 
-export default function CreateListingForm() {
+export default function NewBlogForm() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const router = useRouter();
 

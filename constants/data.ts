@@ -149,6 +149,14 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
+    title: 'Discounts',
+    url: '/dashboard/discounts',
+    icon: 'discount',
+    shortcut: ['d', 'd'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
     title: 'Blogs',
     url: '/dashboard/blogs',
     icon: 'post',

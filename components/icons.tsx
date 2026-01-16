@@ -34,7 +34,8 @@ import {
   Wallet,
   X,
   CircleDollarSign,
-  List
+  List,
+  PercentCircle
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -72,6 +73,7 @@ export const Icons = {
   laptop: Laptop,
   wallet: Wallet,
   money: CircleDollarSign,
+  discount: PercentCircle,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
