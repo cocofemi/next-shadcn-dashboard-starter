@@ -52,7 +52,7 @@ export default function UserAuthForm() {
     setLoading(true);
     login(data.email, data.password).then((res: any) => {
       if (res.status === 200) {
-        if (res?.data?.storeId === undefined) {
+        if (res?.data?.storeId === undefined && res?.data?.role === 'store') {
           router.push('/no-store');
         } else {
           cookies.set('mechchant_admin_user', JSON.stringify(res.data), {

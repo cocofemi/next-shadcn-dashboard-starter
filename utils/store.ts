@@ -124,3 +124,19 @@ export const storePayoutCompleteCheck = async (storeId: string) => {
     return error;
   }
 };
+
+export const updateStoreOnboardingStep = async (storeId: string) => {
+  try {
+    const response = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/store/onboarding/update?storeId=${storeId}`,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      withCredentials: true
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};

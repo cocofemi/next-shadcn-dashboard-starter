@@ -46,7 +46,11 @@ import Cookies from 'universal-cookie';
 import { CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import Joyride from 'react-joyride';
-import { getStoreListing } from '@/utils/store';
+import {
+  getStore,
+  getStoreListing,
+  updateStoreOnboardingStep
+} from '@/utils/store';
 
 export const company = {
   name: 'Mehchant',
@@ -69,24 +73,21 @@ export default function AppSidebar() {
   };
 
   React.useEffect(() => {
-    const hasSeenTour = localStorage.getItem('storeTourCompleted');
     if (user?.userId) {
-      getStoreListing(user?.storeId, 1, 5).then((res) => {
-        if (user?.role === 'store') {
-          if (res?.data?.length === 0 && !hasSeenTour) {
-            const timer = setTimeout(() => {
-              setRunTour(true);
-            }, 500);
-            return () => clearTimeout(timer);
-          }
+      getStore(user?.storeId).then((res) => {
+        if (res?.store?.onboardingComplete === false) {
+          const timer = setTimeout(() => {
+            setRunTour(true);
+          }, 500);
+          return () => clearTimeout(timer);
         }
       });
     }
   }, [user?.userId]);
 
-  const handleTourEnd = () => {
+  const handleTourEnd = async () => {
     setRunTour(false);
-    localStorage.setItem('storeTourCompleted', 'true');
+    await updateStoreOnboardingStep(user?.storeId);
   };
 
   return (
