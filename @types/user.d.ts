@@ -103,6 +103,22 @@ export interface Blogs {
   createdAt: string;
 }
 
+export interface Discounts {
+  _id: string;
+  code: string;
+  description: string;
+  type: string;
+  value: number;
+  minPurchase: number;
+  maxDiscount: number;
+  usageLimit: number;
+  usedCount: number;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface Waitlist {
   _id: string;
   name: string;

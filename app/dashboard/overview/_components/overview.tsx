@@ -3,39 +3,19 @@
 import { AreaGraph } from './area-graph';
 import { BarGraph } from './bar-graph';
 import { PieGraph } from './pie-graph';
-import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import PageContainer from '@/components/layout/page-container';
-import { RecentSales } from './recent-sales';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getMetrics } from '@/utils/metrics';
 import { useEffect, useState } from 'react';
-import {
-  CurrentUserContextType,
-  IMetrics,
-  IStoreData,
-  Orders
-} from '@/@types/user';
+import { CurrentUserContextType, IMetrics, Orders } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import React from 'react';
 import { RecentOrders } from './recent-orders';
 import { getAllOrders } from '@/utils/orders';
 
-import {
-  getStore,
-  getStoreListing,
-  getStoreOrders,
-  getUserStore
-} from '@/utils/store';
+import { getStoreListing, getStoreOrders, getUserStore } from '@/utils/store';
 import { ReminderBanner } from '@/components/reminder-banner';
-import FloatingChatBot from '@/components/chat-bot';
 
 export default function OverViewPage() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
@@ -54,7 +34,6 @@ export default function OverViewPage() {
   useEffect(() => {
     if (user && user.role === 'admin') {
       getMetrics().then((res) => {
-        console.log(res);
         setMetrics(res?.data);
       });
     }
@@ -241,7 +220,7 @@ export default function OverViewPage() {
                 <CardContent>
                   <div className="text-2xl font-bold">
                     {user.role === 'admin'
-                      ? `+${metrics.storesCount}`
+                      ? `+${metrics?.storesCount}`
                       : `+${pendingOrders}`}
                   </div>
                   <p className="text-xs text-muted-foreground">

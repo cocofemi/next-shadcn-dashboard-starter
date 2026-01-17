@@ -74,7 +74,6 @@ export default function PayoutsPage({}: TUserListingPage) {
     setEnableLoading(true);
     storePaymentOnboarding(user?.storeId)
       .then((res) => {
-        console.log(res);
         if (res?.url) window.location.href = res?.url;
         setLoading(false);
       })

@@ -1,5 +1,5 @@
 'use client';
-import { Payout, Users } from '@/@types/user';
+import { Discounts } from '@/@types/user';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,12 +9,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { Edit, Eye, MoreHorizontal, Trash } from 'lucide-react';
+import { Edit, Eye, MoreHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface CellActionProps {
-  data: Payout;
+  data: Discounts;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -43,7 +43,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
           <DropdownMenuItem
-            onClick={() => router.push(`/dashboard/payouts/${data._id}`)}
+            onClick={() =>
+              router.push(`/dashboard/discounts/edit?id=${data?._id}`)
+            }
           >
             <Eye className="mr-2 h-4 w-4" /> View
           </DropdownMenuItem>

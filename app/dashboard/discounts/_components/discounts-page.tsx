@@ -3,34 +3,29 @@
 import PageContainer from '@/components/layout/page-container';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import {
-  storePaymentOnboarding,
-  storePayoutCompleteCheck
-} from '@/utils/store';
-import PaymentsTable from './discounts-tables';
 import React, { useEffect, useState } from 'react';
-import { CurrentUserContextType, Listing, Payout } from '@/@types/user';
+import { CurrentUserContextType, Discounts } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Plus, Loader2 } from 'lucide-react';
-import { getAllPayouts, getStorePayouts } from '@/utils/payouts';
-import { useRouter } from 'next/navigation';
+import { Plus } from 'lucide-react';
+import Link from 'next/link';
+import { getAllDiscounts } from '@/utils/discount';
+import DiscountsTable from './discounts-tables';
 
 type TUserListingPage = {};
 
 export default function DiscountsPage({}: TUserListingPage) {
-  const router = useRouter();
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
 
-  const [totalPayouts, setTotalPayouts] = useState<number>(0);
-  const [payouts, setPayouts] = useState<Payout[]>([]);
+  const [totalDiscounts, setTotalDiscounts] = useState<number>(0);
+
+  const [discounts, setDiscounts] = useState<Discounts[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
-  const [enableLoading, setEnableLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedSearch(search), 600);
@@ -44,51 +39,31 @@ export default function DiscountsPage({}: TUserListingPage) {
   useEffect(() => {
     if (user?.role === 'admin') {
       setLoading(true);
-
-      getAllPayouts(page, limit, debouncedSearch)
+      getAllDiscounts(page, limit, debouncedSearch)
         .then((res) => {
-          setPayouts(res?.payouts);
-          setTotalPayouts(res?.meta.total);
+          setDiscounts(res?.discounts);
+          setTotalDiscounts(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
   }, [user, page, debouncedSearch]);
-
-  useEffect(() => {
-    if (user?.role === 'store') {
-      setLoading(true);
-      getStorePayouts(user?.storeId, page, limit, debouncedSearch)
-        .then((res) => {
-          setPayouts(res?.payouts);
-          setTotalPayouts(res?.meta.total);
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [user, page, debouncedSearch]);
-
-  useEffect(() => {
-    if (user?.role === 'admin') return;
-  }, [user]);
 
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title={`Discounts (${totalPayouts})`} description="" />
-          {user?.role === 'admin' && (
-            <Button
-              onClick={() => router.push('/dashboard/discounts/create')}
-              disabled={enableLoading}
-              className={cn(buttonVariants({ variant: 'default' }))}
-            >
-              <Plus className="mr-2 h-4 w-4" /> Add Discount{' '}
-            </Button>
-          )}
+          <Heading title={`Discounts (${totalDiscounts})`} description="" />
+          <Link
+            href={'/dashboard/discounts/create'}
+            className={cn(buttonVariants({ variant: 'default' }))}
+          >
+            <Plus className="mr-2 h-4 w-4" /> New Discount
+          </Link>
         </div>
         <Separator />
-        <PaymentsTable
-          data={payouts}
-          totalData={totalPayouts}
+        <DiscountsTable
+          data={discounts}
+          totalData={totalDiscounts}
           search={search}
           setSearch={setSearch}
           page={page}

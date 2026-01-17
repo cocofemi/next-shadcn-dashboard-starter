@@ -20,10 +20,10 @@ export const getAllStores = async (
   }
 };
 
-export const getStore = async (storeName: any) => {
+export const getStore = async (storeId: any) => {
   try {
     const response = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/store?storeName=${storeName}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/store?storeId=${storeId}`,
       headers: {
         'Content-Type': 'application/json'
       },

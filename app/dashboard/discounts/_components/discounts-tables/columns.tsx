@@ -1,44 +1,45 @@
 'use client';
-import { Payout } from '@/@types/user';
+
+import { Blogs, Discounts, UserId } from '@/@types/user';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 
-export const columns: ColumnDef<Payout>[] = [
+export const columns: ColumnDef<Discounts>[] = [
   {
-    accessorKey: 'orderId',
-    header: 'ORDER ID'
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false
   },
   {
-    accessorKey: 'payout',
-    header: 'AMOUNT($)'
+    accessorKey: '_id',
+    header: 'ID'
   },
   {
-    accessorKey: 'transferId',
-    header: 'STRIPE PAYMENT ID'
+    accessorKey: 'code',
+    header: 'CODE'
   },
   {
-    accessorKey: 'status',
-    header: 'STATUS',
-    cell: ({ row }) => {
-      const status = row.getValue<string>('status');
-      return (
-        <div>
-          {status === 'paid' ? (
-            <span className="me-2 rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
-              PAID
-            </span>
-          ) : status === 'pending' ? (
-            <span className="me-2 rounded bg-red-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-              PENDNG
-            </span>
-          ) : status === 'failed' ? (
-            <span className="me-2 rounded bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
-              FAILED
-            </span>
-          ) : null}
-        </div>
-      );
-    }
+    accessorKey: 'value',
+    header: 'VALUE ($)'
+  },
+  {
+    accessorKey: 'type',
+    header: 'TYPE'
   },
   {
     accessorKey: 'createdAt',
@@ -57,7 +58,6 @@ export const columns: ColumnDef<Payout>[] = [
 
   {
     id: 'actions',
-    header: 'ACTIONS',
     cell: ({ row }) => <CellAction data={row.original} />
   }
 ];

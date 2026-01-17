@@ -83,7 +83,6 @@ export default function CreateListingForm() {
 
     createBlog(formData)
       .then((res) => {
-        console.log(res);
         setLoading(false);
         router.back();
       })

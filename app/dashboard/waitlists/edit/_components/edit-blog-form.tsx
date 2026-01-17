@@ -118,7 +118,6 @@ export default function EditBlogForm() {
 
     updateBlog(formData, id)
       .then((res) => {
-        console.log(res);
         setUpdateLoading(false);
         router.back();
       })

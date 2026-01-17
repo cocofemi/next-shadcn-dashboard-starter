@@ -66,7 +66,6 @@ export default function UserDetailForm() {
   React.useEffect(() => {
     getUser(id).then((res) => {
       setLoading(false);
-      console.log(res);
       form.reset({
         fname: res?.firstName,
         lname: res?.lastName,
@@ -84,7 +83,6 @@ export default function UserDetailForm() {
     formData.append('role', values.role);
 
     updateUser(formData, id).then((res) => {
-      console.log(res);
       setSubmitLoading(false);
       router.back();
     });

@@ -1,66 +1,35 @@
 'use client';
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Discounts } from '@/@types/user';
+import { useSearchParams } from 'next/navigation';
+
+import { Spinner } from '@/components/ui/spinner';
+import { Badge } from '@/components/ui/badge';
 import { Calendar } from 'lucide-react';
-import { useState } from 'react';
-import EditDiscountPage from './edit-discount';
+import { deleteDiscount, getDiscount } from '@/utils/discount';
+import EditDiscountForm from './edit-discount-form';
+import { AlertModal } from '@/components/modal/alert-modal';
 
-interface Discount {
-  code: string;
-  description: string;
-  type: 'percentage' | 'fixed';
-  value: number;
-  minPurchase: number;
-  maxDiscount: number | null;
-  usageLimit: number | null;
-  usedCount: number;
-  startDate: string;
-  endDate: string;
-  isActive: boolean;
-}
+export default function EditDiscount() {
+  const search = useSearchParams();
+  const id = search.get('id');
 
-export function DiscountDetailsPage() {
-  const [discounts, setDiscounts] = useState<Discount[]>([
-    {
-      code: 'SAVE20',
-      description: '20% off your entire order',
-      type: 'percentage',
-      value: 20,
-      minPurchase: 50,
-      maxDiscount: 100,
-      usageLimit: 100,
-      usedCount: 45,
-      startDate: '2025-01-01',
-      endDate: '2025-12-31',
-      isActive: true
-    }
-  ]);
+  const [editOpen, setEditOpen] = React.useState(false);
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [deleteLoading, setDeleteLoading] = React.useState<boolean>(false);
 
-  const [newDiscount, setNewDiscount] = useState<Partial<Discount>>({
-    type: 'percentage',
-    minPurchase: 0,
-    usedCount: 0,
-    isActive: true
-  });
-  const [editOpen, setEditOpen] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    getDiscount(id).then((res) => {
+      setDiscount(res?.data);
+      setLoading(false);
+    });
+  }, []);
+
+  const [discount, setDiscount] = React.useState<Discounts | null>(null);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -74,59 +43,40 @@ export function DiscountDetailsPage() {
     return type === 'percentage' ? `${value}%` : `$${value}`;
   };
 
-  const handleEdit = (index: number) => {
-    setEditOpen(true);
-    setEditingIndex(index);
-    setNewDiscount(discounts[index]);
-  };
+  React.useEffect(() => {
+    document.body.style.overflow = 'auto'; // Ensure scrolling is enabled
+  }, []);
 
-  const handleSubmit = () => {
-    if (editingIndex !== null) {
-      // Update existing discount
-      const updatedDiscounts = [...discounts];
-      updatedDiscounts[editingIndex] = newDiscount as Discount;
-      setDiscounts(updatedDiscounts);
-      setEditingIndex(null);
-    } else {
-      // Create new discount
-      setDiscounts([...discounts, newDiscount as Discount]);
-    }
-    // Reset form
-    setNewDiscount({
-      type: 'percentage',
-      minPurchase: 0,
-      usedCount: 0,
-      isActive: true
+  const handleDelete = async () => {
+    setDeleteLoading(true);
+    await deleteDiscount(discount?._id).then((res) => {
+      console.log('Response', res);
+      setDeleteLoading(false);
+      setDeleteOpen(false);
     });
   };
 
-  const handleCancel = () => {
-    setEditingIndex(null);
-    setNewDiscount({
-      type: 'percentage',
-      minPurchase: 0,
-      usedCount: 0,
-      isActive: true
-    });
-  };
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Spinner />
+        <span className="ml-3 text-gray-500">Loading discount...</span>
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Active Discounts */}
       <Card className="mx-auto w-full">
         <CardHeader>
-          <CardTitle>Discount Codes</CardTitle>
-          <CardDescription>
-            Manage your active and expired discount codes
-          </CardDescription>
+          <CardTitle className="text-left text-2xl font-bold">
+            Edit Discount
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {discounts.map((discount, index) => (
-              <div
-                key={index}
-                className="flex items-start justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50"
-              >
+            {discount && (
+              <div className="flex items-start justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50">
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-3">
                     <code className="rounded bg-muted px-3 py-1 font-mono text-lg font-bold">
@@ -175,20 +125,30 @@ export function DiscountDetailsPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleEdit(index)}
+                    onClick={() => setEditOpen(true)}
                   >
                     Edit
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDeleteOpen(true)}
+                  >
                     Delete
                   </Button>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>
-      {editOpen && <EditDiscountPage />}
+      {editOpen && discount && <EditDiscountForm discount={discount} />}
+      <AlertModal
+        isOpen={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+      />
     </>
   );
 }

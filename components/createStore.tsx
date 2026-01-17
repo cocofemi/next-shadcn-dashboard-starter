@@ -28,7 +28,7 @@ export function NoStoreWarning() {
             </Button>
 
             <Button asChild variant="outline" className="w-full sm:w-auto">
-              <Link href="/home">Back to marketplace</Link>
+              <Link href="/">Back to marketplace</Link>
             </Button>
           </div>
 

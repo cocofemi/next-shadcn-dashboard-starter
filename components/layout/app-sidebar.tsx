@@ -51,6 +51,7 @@ import {
   getStoreListing,
   updateStoreOnboardingStep
 } from '@/utils/store';
+import { useMounted } from '@/hooks/use-mount';
 
 export const company = {
   name: 'Mehchant',
@@ -61,6 +62,7 @@ export const company = {
 export default function AppSidebar() {
   const [runTour, setRunTour] = React.useState(false);
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const mounted = useMounted();
   const { data: session } = useSession();
   const router = useRouter();
   const cookies = new Cookies();
@@ -73,7 +75,11 @@ export default function AppSidebar() {
   };
 
   React.useEffect(() => {
-    if (user?.userId) {
+    if (!mounted) return;
+  });
+
+  React.useEffect(() => {
+    if (user?.userId && user?.role === 'store') {
       getStore(user?.storeId).then((res) => {
         if (res?.store?.onboardingComplete === false) {
           const timer = setTimeout(() => {
