@@ -11,7 +11,13 @@ import {
   getShippingLabel,
   getStoreOrderDetails
 } from '@/utils/orders';
-import { CurrentUserContextType, Orders, ShippingLabel } from '@/@types/user';
+import {
+  CurrentUserContextType,
+  Orders,
+  ShippingBreakdown,
+  ShippingLabel,
+  StoreBreakDown
+} from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import CompleteOrderForm from './complete-order-form';
@@ -30,6 +36,8 @@ export default function OrderDetails() {
   const [order, setOrder] = React.useState<Orders | any>([]);
   const [shippingLabel, setShippingLabel] = React.useState<ShippingLabel>();
   const [totalPrice, setTotalPrice] = React.useState(0);
+  const [shippingBreakDown, setShippingBreakDown] =
+    React.useState<ShippingBreakdown>();
 
   React.useEffect(() => {
     if (user && user?.role === 'admin') {
@@ -43,10 +51,12 @@ export default function OrderDetails() {
     if (user && user?.role === 'store') {
       getStoreOrderDetails(user?.storeId, orderId).then((res) => {
         setOrder(res?.data);
-        // console.log(res?.data);
+        console.log('Order', res?.data);
       });
     }
   }, [user]);
+
+  console.log(shippingBreakDown);
 
   // Calculate totalPrice whenever `order` changes
   React.useEffect(() => {
@@ -74,7 +84,7 @@ export default function OrderDetails() {
   return (
     <Card className="mx-auto w-full">
       <CardHeader>
-        {Object.keys(order).length != 0 ? (
+        {Object?.keys(order).length != 0 ? (
           <>
             <CardTitle className="text-left text-2xl font-bold capitalize">{`Order  #${order?.orderId}`}</CardTitle>
             <div className="font-normal text-gray-500">
@@ -167,26 +177,118 @@ export default function OrderDetails() {
                         ))}
                     </tbody>
                   </table>
-                  <div className="ms-2 mt-5 flex justify-start">
-                    <ul>
-                      {user?.role === 'admin' && (
-                        <li>{`Subotal: $${order.subTotal.toFixed(2)}`}</li>
-                      )}
-                      {user?.role === 'store' && (
-                        <li>{`Subotal: $${totalPrice.toFixed(2)}`}</li>
-                      )}
-                      <li>
-                        Shipping Fee: {`$${order.shippingFee.toFixed(2)}`}
-                      </li>
-                      {/* <li>Shipping Type: {`${order.shippingType}`}</li> */}
-                      {/* <li>Tax: $2.00</li> */}
-                      {user?.role === 'admin' && (
-                        <li>{`Total: $${(order.subTotal + order.shippingFee).toFixed(2)}`}</li>
-                      )}
-                      {user?.role === 'store' && (
-                        <li>{`Total: $${(totalPrice + order.shippingFee).toFixed(2)}`}</li>
-                      )}
-                    </ul>
+                  <div className="mt-10 max-w-3xl rounded-2xl border shadow-sm">
+                    <div className="border-b px-6 py-5">
+                      <h2 className="text-xl font-semibold">Order Summary</h2>
+                      <p className="text-sm text-gray-500">
+                        Breakdown of items, shipping, and totals
+                      </p>
+                    </div>
+
+                    <div className="space-y-8 px-6 py-6">
+                      {/* Listing Price */}
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">Listing Price</p>
+
+                        {user?.role === 'admin' && (
+                          <p className="text-lg font-semibold">
+                            ${order.subTotal.toFixed(2)}
+                          </p>
+                        )}
+
+                        {user?.role === 'store' && (
+                          <p className="text-lg font-semibold">
+                            ${totalPrice.toFixed(2)}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Divider */}
+                      <div className="border-t" />
+
+                      {/* Shipping Breakdown */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                          Shipping Breakdown
+                        </h3>
+
+                        <div className="space-y-4">
+                          {order?.shippingBreakDown.map(
+                            (item: ShippingBreakdown) => (
+                              <div
+                                key={item._id}
+                                className="flex flex-col gap-6 rounded-xl border bg-gray-50 p-5 sm:flex-row sm:items-center sm:justify-between"
+                              >
+                                {/* Left */}
+                                <div className="space-y-1">
+                                  <p className="text-sm font-medium">
+                                    Carrier:{' '}
+                                    <span className="font-semibold">
+                                      {item.carrier}
+                                    </span>
+                                  </p>
+
+                                  <p className="text-sm">
+                                    Shipping type:{' '}
+                                    <span className="font-medium capitalize">
+                                      Standard
+                                    </span>
+                                  </p>
+
+                                  <p className="text-sm text-gray-600">
+                                    ETA:{' '}
+                                    <span className="font-medium">
+                                      {new Date(
+                                        item.eta.earliest
+                                      ).toLocaleDateString()}{' '}
+                                      –{' '}
+                                      {new Date(
+                                        item.eta.latest
+                                      ).toLocaleDateString()}
+                                    </span>
+                                  </p>
+                                </div>
+
+                                {/* Right */}
+                                <div className="flex items-center justify-between gap-6">
+                                  <div className="text-right">
+                                    <p className="text-sm">Shipping Fee</p>
+                                    <p className="text-lg font-semibold">
+                                      ${item.shippingFee.toFixed(2)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="border-t" />
+
+                      {/* Store Totals */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Store Totals</h3>
+
+                        <div className="space-y-3">
+                          {order?.storeBreakDown.map((item: StoreBreakDown) => (
+                            <div
+                              key={item.storeId}
+                              className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3"
+                            >
+                              <p className="text-sm font-medium text-gray-700">
+                                Gross
+                              </p>
+
+                              <p className="text-lg font-semibold text-gray-900">
+                                ${Number(item.gross).toFixed(2)}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

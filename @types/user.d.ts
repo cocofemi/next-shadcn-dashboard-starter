@@ -40,6 +40,23 @@ export interface ShippingLabel {
   paid: boolean;
 }
 
+export interface ShippingBreakdown {
+  _id: string;
+  carrier: string;
+  eta: {
+    earliest: Date;
+    latest: Date;
+  };
+  shippingFee: number;
+  storeId: string;
+  shippingType: string;
+}
+
+export interface StoreBreakDown {
+  storeId: string;
+  gross: number;
+}
+
 export interface IMetrics {
   totalOrders: number;
   signupCount: number;
@@ -152,6 +169,8 @@ export interface Orders {
   userId: UserId;
   storeId: Store;
   shippingDetails: [ShippingAddress];
+  shippingBreakdown: [ShippingBreakdown];
+  storeBreakDown: [StoreBreakDown];
   fulfilled: [Fulfilled];
   createdAt: string;
 }
