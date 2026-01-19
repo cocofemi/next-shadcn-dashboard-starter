@@ -109,7 +109,7 @@ export function AreaGraph() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Area Chart - Stacked</CardTitle>
+        <CardTitle>Revenue</CardTitle>
 
         <div className="flex justify-between">
           <CardDescription>Showing total store revenue</CardDescription>

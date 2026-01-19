@@ -102,7 +102,7 @@ export function PieGraph() {
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut interactive</CardTitle>
+        <CardTitle>Order fulfillments</CardTitle>
         <CardDescription>Showing fulfilments</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
