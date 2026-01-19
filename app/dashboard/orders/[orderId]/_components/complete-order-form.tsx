@@ -78,10 +78,13 @@ export default function CompleteOrderForm() {
         .then((res) => {
           setLoading(false);
           console.log(res);
-          toast.success('Order fulfilled successfully');
+          toast.success('Order completed successfully');
           router.back();
         })
-        .catch(() => setError('There was an issue completing this order'));
+        .catch(() => {
+          setError('There was an issue completing this order');
+          toast.warning('There was a problem completing order. Try again');
+        });
     }
   }
 
