@@ -36,8 +36,6 @@ export default function OrderDetails() {
   const [order, setOrder] = React.useState<Orders | any>([]);
   const [shippingLabel, setShippingLabel] = React.useState<ShippingLabel>();
   const [totalPrice, setTotalPrice] = React.useState(0);
-  const [shippingBreakDown, setShippingBreakDown] =
-    React.useState<ShippingBreakdown>();
 
   React.useEffect(() => {
     if (user && user?.role === 'admin') {
@@ -55,8 +53,6 @@ export default function OrderDetails() {
       });
     }
   }, [user]);
-
-  console.log(shippingBreakDown);
 
   // Calculate totalPrice whenever `order` changes
   React.useEffect(() => {

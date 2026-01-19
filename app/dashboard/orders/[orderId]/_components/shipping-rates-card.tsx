@@ -155,7 +155,7 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
   const onError = (err: any) => {};
   const handleBuyLabel = () => {
     setLoading(true);
-    buyLabel(chooseRate, order?._id, user?.storeId)
+    buyLabel(chooseRate, order?.orderId, user?.storeId)
       .then((res) => {
         if (res?.url) window.location.href = res?.url;
         setLoading(false);
