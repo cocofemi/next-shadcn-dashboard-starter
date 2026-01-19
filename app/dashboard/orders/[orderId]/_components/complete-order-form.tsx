@@ -28,6 +28,7 @@ import { CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   tracking_number: z.string().min(5, {
@@ -77,7 +78,8 @@ export default function CompleteOrderForm() {
         .then((res) => {
           setLoading(false);
           console.log(res);
-          router.push('/dashboard/orders');
+          toast.success('Order fulfilled successfully');
+          router.back();
         })
         .catch(() => setError('There was an issue completing this order'));
     }
