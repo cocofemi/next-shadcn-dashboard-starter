@@ -47,8 +47,8 @@ export default function CompleteOrderForm() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
   const params = useParams();
+  const { orderId } = params;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,6 +60,8 @@ export default function CompleteOrderForm() {
     }
   });
 
+  console.log(orderId);
+
   const [error, setError] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -68,7 +70,7 @@ export default function CompleteOrderForm() {
     const { tracking_number, ship_provider, shipDate, notes } = values;
     if (user) {
       completeOrder(
-        id,
+        orderId,
         user?.storeId,
         tracking_number,
         ship_provider,
