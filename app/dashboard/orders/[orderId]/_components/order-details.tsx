@@ -31,8 +31,6 @@ export default function OrderDetails() {
   const params = useParams();
   const { orderId } = params;
 
-  const [visible, setVisible] = React.useState<boolean>(false);
-
   const [order, setOrder] = React.useState<Orders | any>([]);
   const [shippingLabel, setShippingLabel] = React.useState<ShippingLabel>();
   const [totalPrice, setTotalPrice] = React.useState(0);
@@ -92,19 +90,6 @@ export default function OrderDetails() {
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
               <div className="col-span-4">
-                {user?.role === 'store' &&
-                  order.fulfilled &&
-                  order.fulfilled[0].fulfilled === false && (
-                    <div className="mb-5 flex justify-end">
-                      <Link
-                        href={''}
-                        onClick={() => setVisible((prevState) => !prevState)}
-                        className={cn(buttonVariants({ variant: 'default' }))}
-                      >
-                        <Plus className="mr-2 h-4 w-4" /> Complete Order
-                      </Link>
-                    </div>
-                  )}
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                   <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
                     <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -373,18 +358,20 @@ export default function OrderDetails() {
           <CardTitle>Loading...</CardTitle>
         )}
       </CardHeader>
-      {visible && (
-        <>
-          <ShippingRatesCard
-            orderAddress={order.shippingDetails[0]}
-            order={order}
-          />
-          {shippingLabel?.paid && (
-            <ShippingLabelCard shippingLabel={shippingLabel} />
-          )}
-          <CompleteOrderForm />
-        </>
-      )}
+      {user?.role === 'store' &&
+        order.fulfilled &&
+        order.fulfilled[0].fulfilled === false && (
+          <>
+            <ShippingRatesCard
+              orderAddress={order.shippingDetails[0]}
+              order={order}
+            />
+            {shippingLabel?.paid && (
+              <ShippingLabelCard shippingLabel={shippingLabel} />
+            )}
+            <CompleteOrderForm />
+          </>
+        )}
     </Card>
   );
 }

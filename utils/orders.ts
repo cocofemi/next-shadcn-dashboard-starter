@@ -77,6 +77,7 @@ export const getShippingRates = async (
 
 export const buyLabel = async (
   rateId: any,
+  orderNumber: string,
   orderId: string,
   storeId: string
 ) => {
@@ -87,6 +88,7 @@ export const buyLabel = async (
       method: 'POST',
       data: {
         rateId,
+        orderNumber,
         orderId,
         storeId
       },
