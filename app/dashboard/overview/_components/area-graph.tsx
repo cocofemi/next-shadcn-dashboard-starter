@@ -104,7 +104,7 @@ export function AreaGraph() {
         setStoreRevenue(res?.data);
       });
     }
-  }, [, period]);
+  }, [, period, user]);
 
   return (
     <Card>

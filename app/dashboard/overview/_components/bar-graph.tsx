@@ -172,7 +172,7 @@ export function BarGraph() {
           setLoading(false);
         });
     }
-  }, [, limit]);
+  }, [, limit, user]);
 
   return (
     <>

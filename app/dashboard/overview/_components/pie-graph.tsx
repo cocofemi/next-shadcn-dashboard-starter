@@ -97,7 +97,7 @@ export function PieGraph() {
           setLoading(false);
         });
     }
-  }, [, days]);
+  }, [, days, user]);
 
   return (
     <Card className="flex flex-col">
