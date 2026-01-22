@@ -1014,7 +1014,7 @@ export default function EditListingForm() {
               </div>
             </div>
             <Button type="submit" disabled={updateLoading || deleteLoading}>
-              Submit
+              Update
               <ClipLoader
                 color="white"
                 loading={updateLoading}
