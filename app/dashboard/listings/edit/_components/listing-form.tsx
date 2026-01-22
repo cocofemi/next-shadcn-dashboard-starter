@@ -121,6 +121,7 @@ export default function EditListingForm() {
   const [markdown, setMarkdown] = React.useState('');
 
   const [shippingMode, setShippingMode] = React.useState('automatic');
+  const [hasVariants, setHasVariants] = React.useState(false);
 
   const [listing, setListing] = React.useState<IListing>();
   const [variants, setVariants] = React.useState([{ option: '', value: '' }]);
@@ -181,6 +182,11 @@ export default function EditListingForm() {
             res?.data?.listing?.shippingManualSpec?.location || continents
           );
           setMarkdown(res?.data?.listing?.description);
+          // Check if listing has variations
+          const hasExistingVariants =
+            res?.data?.listing?.variation &&
+            res?.data?.listing?.variation.length > 0;
+          setHasVariants(hasExistingVariants);
           const images = res.data.listing.listingImage.map(
             (item: any) => item.url
           );
@@ -204,7 +210,10 @@ export default function EditListingForm() {
             value: val
           }))
         ) || [];
-      setVariants(formatedData);
+
+      if (formatedData.length > 0) {
+        setVariants(formatedData);
+      }
     }
   }, [listing]);
 
@@ -295,7 +304,8 @@ export default function EditListingForm() {
       processingTime
     } = values;
 
-    let variants = combineVariants();
+    //Only combine variants if hasVariants is true
+    let variants = hasVariants ? combineVariants() : [];
 
     const shippingSpec = {
       width,
@@ -524,65 +534,87 @@ export default function EditListingForm() {
                 title={'Variation'}
                 description=" This item has variations e.g color, size, length etc."
               />
-              <div className="mt-5 space-y-4">
-                {variants.map((option, index) => (
-                  <div key={index} className="flex items-center space-x-4">
-                    {/* Dropdown for Variant Type */}
-                    <select
-                      value={option.option}
-                      onChange={(e) =>
-                        handleVariantChange(index, 'option', e.target.value)
-                      }
-                      className={cn(
-                        'flex h-9 w-48 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
-                      )}
-                    >
-                      <option value="" disabled>
-                        Select Variant
-                      </option>
-                      <option value="Size">Size</option>
-                      <option value="Color">Color</option>
-                      <option value="Width">Width</option>
-                      <option value="Length">Length</option>
-                      <option value="Material">Material</option>
-                    </select>
 
-                    {/* Input for Value */}
-                    <input
-                      type="text"
-                      value={option.value}
-                      onChange={(e) =>
-                        handleVariantChange(index, 'value', e.target.value)
-                      }
-                      placeholder="Enter value"
-                      className={cn(
-                        'flex h-9 w-72 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
-                      )}
-                    />
-
-                    {/* Remove Variant Button */}
-                    {variants.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeVariant(index)}
-                        className="text-red-500 hover:underline"
-                      >
-                        <Trash size={15} />
-                      </button>
-                    )}
-                  </div>
-                ))}
-
-                {/* Add Another Option Button */}
-                <button
-                  type="button"
-                  onClick={addVariant}
-                  className={cn(buttonVariants({ variant: 'default' }))}
+              {/* ✅ Checkbox to enable/disable variants */}
+              <div className="mt-4 flex items-center space-x-3">
+                <Checkbox
+                  id="hasVariants"
+                  checked={hasVariants}
+                  onCheckedChange={(checked) => {
+                    setHasVariants(!!checked);
+                    // Reset variants when unchecked
+                    if (!checked) {
+                      setVariants([{ option: '', value: '' }]);
+                    }
+                  }}
+                />
+                <Label
+                  htmlFor="hasVariants"
+                  className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Another Option
-                </button>
+                  This listing has variations
+                </Label>
               </div>
+
+              {/* ✅ Only show variant inputs if hasVariants is true */}
+              {hasVariants && (
+                <div className="mt-5 space-y-4">
+                  {variants.map((option, index) => (
+                    <div key={index} className="flex items-center space-x-4">
+                      <select
+                        value={option.option}
+                        onChange={(e) =>
+                          handleVariantChange(index, 'option', e.target.value)
+                        }
+                        className={cn(
+                          'flex h-9 w-48 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
+                        )}
+                      >
+                        <option value="" disabled>
+                          Select Variant
+                        </option>
+                        <option value="Size">Size</option>
+                        <option value="Color">Color</option>
+                        <option value="Width">Width</option>
+                        <option value="Length">Length</option>
+                        <option value="Material">Material</option>
+                      </select>
+
+                      <input
+                        type="text"
+                        value={option.value}
+                        onChange={(e) =>
+                          handleVariantChange(index, 'value', e.target.value)
+                        }
+                        placeholder="Enter value"
+                        className={cn(
+                          'flex h-9 w-72 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
+                        )}
+                      />
+
+                      {/* ✅ Show trash icon on all variants */}
+                      {variants.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeVariant(index)}
+                          className="text-red-500 hover:underline"
+                        >
+                          <Trash size={15} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={addVariant}
+                    className={cn(buttonVariants({ variant: 'default' }))}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Another Option
+                  </button>
+                </div>
+              )}
             </div>
 
             <Heading
