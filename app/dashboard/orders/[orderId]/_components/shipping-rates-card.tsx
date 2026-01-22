@@ -406,7 +406,7 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
               className="w-full md:w-auto"
               size="lg"
             >
-              {ratesLoading ? 'Generating Rates...' : 'Generate Rates'}
+              {ratesLoading ? 'Generating Rates...' : 'Generate Shipping Rates'}
               {ratesLoading && <Loader2 className="animate-spin" />}
             </Button>
             {rateError != '' && (
