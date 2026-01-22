@@ -546,7 +546,236 @@ export default function CreateListingForm() {
               />
             </div>
 
-            {/* ... rest of shipping section remains the same ... */}
+            <div className="card mt-3 border-0 shadow-sm">
+              <div className="card-body p-0">
+                <label className="form-label fw-bold mb-3">
+                  Shipping Setup
+                </label>
+
+                {/* Step 1: Choose Mode */}
+                <div className="my-4 grid grid-cols-3 gap-4">
+                  <div className="flex flex-col">
+                    <div
+                      className={`h-full rounded border p-3 transition-all ${
+                        shippingMode === 'automatic'
+                          ? 'bg-light border-primary'
+                          : 'border-light-subtle'
+                      }`}
+                      onClick={() => setShippingMode('automatic')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="d-flex align-items-start">
+                        {/* Radio Button */}
+                        <div className="form-check mb-0 flex">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            checked={shippingMode === 'automatic'}
+                            onChange={() => {}} // Controlled by parent onClick
+                          />
+                          <h6 className="fw-bold ms-1">Automatic</h6>
+                        </div>
+
+                        {/* Text Content */}
+                        <div className="ms-2">
+                          <p className="small mb-0">
+                            Allow mehchant to generate the best reates from your
+                            address to buyers address at checkout.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <div
+                      className={`h-full rounded border p-3 transition-all ${
+                        shippingMode === 'manual'
+                          ? 'bg-light border-primary'
+                          : 'border-light-subtle'
+                      }`}
+                      onClick={() => setShippingMode('manual')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="card-body">
+                        <div className="form-check mb-0 flex">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            checked={shippingMode === 'manual'}
+                            onChange={() => {}}
+                          />
+                          <h6 className="card-title fw-bold ms-1">Manual</h6>
+                        </div>
+
+                        <p className="card-text small">
+                          Enter your own fixed shipping rates and delivery types
+                          for your customers.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <div
+                      className={`h-full rounded border p-3 transition-all ${
+                        shippingMode === 'free'
+                          ? 'bg-light border-primary'
+                          : 'border-light-subtle'
+                      }`}
+                      onClick={() => setShippingMode('free')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="card-body">
+                        <div className="form-check mb-0 flex">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            checked={shippingMode === 'free'}
+                            onChange={() => {}}
+                          />
+                          <h6 className="card-title fw-bold ms-1">
+                            Free Shipping
+                          </h6>
+                        </div>
+
+                        <p className="card-text small">
+                          Shipping fee cost is incured by you.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2: Conditional Content */}
+                <div className="bg-light rounded p-3">
+                  {shippingMode === 'automatic' ? (
+                    <div className="d-flex align-items-center">
+                      <i className="bi bi-magic me-2"></i>
+                      <small className="fw-medium">
+                        Mechant will automatically fetch the most cost-effective
+                        rates from FedEx, UPS, and DHL.
+                      </small>
+                    </div>
+                  ) : (
+                    <div className="animate-fade-in">
+                      <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <FormField
+                            control={form.control}
+                            name="shippingFee"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Shipping Fee (USD)</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    placeholder="Enter shipping fee"
+                                    {...field}
+                                    disabled={shippingMode === 'free'}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="form-label small fw-bold mb-3">
+                            Select processing time
+                          </label>
+                          <Controller
+                            control={form.control}
+                            name="processingTime"
+                            render={({ field }) => (
+                              <Select
+                                onValueChange={field.onChange}
+                                value={String(field.value)}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Processing time" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectLabel>Days</SelectLabel>
+                                    <SelectItem value="3">3</SelectItem>
+                                    <SelectItem value="7">7</SelectItem>
+                                    <SelectItem value="14">14</SelectItem>
+                                    <SelectItem value="21">21</SelectItem>
+                                    <SelectItem value="30">30</SelectItem>
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
+                        </div>
+                      </div>
+                      <Card className="mt-4 w-full max-w-md">
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <Globe className="h-5 w-5 text-primary" />
+                            Region Selection
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid gap-4">
+                          {/* Worldwide Toggle */}
+                          <div className="flex items-center space-x-3 space-y-0 rounded-lg border bg-muted/50 p-3 transition-colors">
+                            <Checkbox
+                              id="worldwide"
+                              checked={isAllSelected}
+                              onCheckedChange={(checked) =>
+                                toggleWorldwide(!!checked)
+                              }
+                            />
+                            <Label
+                              htmlFor="worldwide"
+                              className="w-full cursor-pointer text-sm font-bold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Worldwide
+                            </Label>
+                          </div>
+
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                              <span className="bg-background px-2 text-muted-foreground">
+                                Individual Continents
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* List of Continents */}
+                          <div className="grid grid-cols-1 gap-3 px-1">
+                            {continents.map((continent) => (
+                              <div
+                                key={continent}
+                                className="flex items-center space-x-3 space-y-0"
+                              >
+                                <Checkbox
+                                  id={continent}
+                                  checked={selectedLocation.includes(continent)}
+                                  onCheckedChange={() =>
+                                    toggleContinent(continent)
+                                  }
+                                />
+                                <Label
+                                  htmlFor={continent}
+                                  className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                  {continent}
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
 
             <Button type="submit" disabled={loading}>
               Submit
