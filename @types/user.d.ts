@@ -77,6 +77,7 @@ export interface IStoreData {
 export type CurrentUserContextType = {
   user: IUser;
   setUser: (user: IUser) => void;
+  setRefresh: (refresh: boolean) => void;
   loading: boolean;
 };
 

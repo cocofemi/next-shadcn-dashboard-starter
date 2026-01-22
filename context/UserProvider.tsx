@@ -26,6 +26,7 @@ function UserProvider({ children }: { children: React.ReactNode }) {
   });
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   useEffect(() => {
     // Load user from cookies on mount
@@ -68,10 +69,10 @@ function UserProvider({ children }: { children: React.ReactNode }) {
         cookies.remove('mechchant_admin_user');
       }
     }
-  }, []);
+  }, [refresh]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider value={{ user, setUser, loading, setRefresh }}>
       {children}
     </UserContext.Provider>
   );
