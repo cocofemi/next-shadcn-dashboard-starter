@@ -57,6 +57,10 @@ const PayoutDetails = () => {
     }
   }, [user]);
 
+  React.useEffect(() => {
+    document.body.style.overflow = 'auto'; // Ensure scrolling is enabled
+  }, []);
+
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
