@@ -233,8 +233,10 @@ export default function OrderDetails() {
                                 {/* Right */}
                                 <div className="flex items-center justify-between gap-6">
                                   <div className="text-right">
-                                    <p className="text-sm">Shipping Fee</p>
-                                    <p className="text-lg font-semibold">
+                                    <p className="text-sm text-gray-600">
+                                      Shipping Fee
+                                    </p>
+                                    <p className="text-lg font-semibold text-gray-600">
                                       ${item.shippingFee.toFixed(2)}
                                     </p>
                                   </div>
