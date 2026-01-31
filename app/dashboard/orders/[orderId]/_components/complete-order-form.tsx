@@ -81,7 +81,7 @@ export default function CompleteOrderForm() {
           setLoading(false);
           console.log(res);
           toast.success('Order completed successfully');
-          router.back();
+          router.push('/dashboard/orders');
         })
         .catch(() => {
           setError('There was an issue completing this order');
