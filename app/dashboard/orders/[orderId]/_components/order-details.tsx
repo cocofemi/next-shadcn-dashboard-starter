@@ -61,7 +61,7 @@ export default function OrderDetails() {
 
   React.useEffect(() => {
     if (user && order?.item?.length > 0) {
-      getShippingLabel(order?._id)
+      getShippingLabel(order?._id, user?.storeId)
         .then((res) => {
           setShippingLabel(res?.data);
         })

@@ -100,10 +100,10 @@ export const buyLabel = async (
   }
 };
 
-export const getShippingLabel = async (orderId: any) => {
+export const getShippingLabel = async (orderId: string, storeId: string) => {
   try {
     const response = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/shipping-label?orderId=${orderId}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/shipping-label?orderId=${orderId}&storeId=${storeId}`,
       headers: {
         'Content-Type': 'application/json'
       },
