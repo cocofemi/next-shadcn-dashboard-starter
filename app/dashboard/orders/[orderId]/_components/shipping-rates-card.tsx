@@ -490,7 +490,7 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
           <CardFooter>
             <Button
               onClick={handleBuyLabel}
-              disabled={loading}
+              disabled={loading || chooseRate === ''}
               className="w-full md:w-auto"
               size="lg"
             >
