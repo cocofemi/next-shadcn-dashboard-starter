@@ -202,16 +202,16 @@ export default function OrderDetails() {
                               >
                                 {/* Left */}
                                 <div className="space-y-1">
-                                  <p className="text-sm font-medium">
+                                  <p className="text-sm font-medium text-gray-600">
                                     Carrier:{' '}
                                     <span className="font-semibold">
                                       {item.carrier}
                                     </span>
                                   </p>
 
-                                  <p className="text-sm">
+                                  <p className="text-sm text-gray-600">
                                     Shipping type:{' '}
-                                    <span className="font-medium capitalize">
+                                    <span className="font-medium capitalize text-gray-600">
                                       Standard
                                     </span>
                                   </p>
