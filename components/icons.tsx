@@ -16,6 +16,7 @@ import {
   Loader2,
   LogIn,
   LucideIcon,
+  Truck,
   LucideProps,
   LucideShoppingBag,
   Moon,
@@ -35,7 +36,9 @@ import {
   X,
   CircleDollarSign,
   List,
-  PercentCircle
+  PercentCircle,
+  ShoppingBag,
+  ShoppingBasket
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -58,7 +61,9 @@ export const Icons = {
   userPen: UserPen,
   user2: UserCircle2Icon,
   media: Image,
+  truck: Truck,
   settings: Settings,
+  shopping: ShoppingBasket,
   billing: CreditCard,
   ellipsis: MoreVertical,
   add: Plus,

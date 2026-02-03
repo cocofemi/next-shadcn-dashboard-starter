@@ -98,6 +98,16 @@ export interface Stores {
   description: string;
 }
 
+export interface ShippingLabelTransactions {
+  type: string;
+  amount: number;
+  balanceAfter: number;
+  balanceBefore: number;
+  relatedShippingLabelId: string;
+  relatedOrderId: string;
+  createdAt: string;
+}
+
 export interface Listing {
   _id: string;
   listingId: string;
@@ -174,6 +184,18 @@ export interface Orders {
   storeBreakDown: [StoreBreakDown];
   fulfilled: [Fulfilled];
   createdAt: string;
+}
+
+export interface Labels {
+  _id: string;
+  orderId: string;
+  cost: number;
+  trackingNumber: string;
+  labelUrl: stringl;
+  status: string;
+  paid: boolean;
+  carrier: string;
+  storeId: Stores;
 }
 
 export interface UserId {

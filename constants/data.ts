@@ -111,7 +111,7 @@ export const navItems: NavItem[] = [
   {
     title: 'Orders',
     url: '/dashboard/orders',
-    icon: 'wallet',
+    icon: 'shopping',
     shortcut: ['o', 'o'],
     isActive: false,
     items: [] // No child items
@@ -136,6 +136,22 @@ export const navItems: NavItem[] = [
     title: 'Listings',
     url: '/dashboard/listings',
     icon: 'product',
+    shortcut: ['l', 'l'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: 'Wallet',
+    url: '/dashboard/wallet',
+    icon: 'wallet',
+    shortcut: ['w', 'w'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: 'Shipping Labels',
+    url: '/dashboard/labels',
+    icon: 'truck',
     shortcut: ['l', 'l'],
     isActive: false,
     items: [] // No child items
@@ -223,7 +239,7 @@ export const storenavItems: NavItem[] = [
   {
     title: 'Orders',
     url: '/dashboard/orders',
-    icon: 'wallet',
+    icon: 'shopping',
     shortcut: ['o', 'o'],
     isActive: false,
     items: [] // No child items
@@ -241,6 +257,14 @@ export const storenavItems: NavItem[] = [
     url: '/dashboard/payouts',
     icon: 'money',
     shortcut: ['e', 'e'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: 'Labels',
+    url: '/dashboard/labels',
+    icon: 'truck',
+    shortcut: ['l', 'l'],
     isActive: false,
     items: [] // No child items
   },
@@ -300,6 +324,11 @@ export const steps = [
     target: '.sidebar-icon-money',
     content:
       'Your payouts — here you enable payments for your store and start receiving payouts.'
+  },
+  {
+    target: '.sidebar-icon-truck',
+    content:
+      'Your labels — here you enable see shipping labels for orders that you purchased.'
   },
   {
     target: '.header-notification-icon',

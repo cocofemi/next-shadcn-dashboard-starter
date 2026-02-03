@@ -29,13 +29,8 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useEffect } from 'react';
 import { Spinner } from '../spinner';
-import { CurrentUserContextType } from '@/@types/user';
-import { UserContext } from '@/context/UserProvider';
 import React from 'react';
 
 interface DataTableProps<

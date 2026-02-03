@@ -16,6 +16,7 @@ import { getAllOrders } from '@/utils/orders';
 
 import { getStoreListing, getStoreOrders, getUserStore } from '@/utils/store';
 import { ReminderBanner } from '@/components/reminder-banner';
+import { getShippingWalletBalance } from '@/utils/labels';
 
 export default function OverViewPage() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
@@ -30,6 +31,9 @@ export default function OverViewPage() {
   const [limit, setLimit] = useState<number>(10);
   const [totalStoreListing, setTotalStoreListing] = useState<number>(0);
   const [pendingOrders, setPendingOrders] = useState<number>(0);
+
+  const [shippingLabelWalletBalance, setShippingLabelWalletBalance] =
+    useState<number>(0);
 
   useEffect(() => {
     if (user && user.role === 'admin') {
@@ -46,6 +50,14 @@ export default function OverViewPage() {
       });
     }
   }, [user, page]);
+
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      getShippingWalletBalance().then((res) => {
+        setShippingLabelWalletBalance(res?.wallet?.balance);
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user && user.role === 'store') {
@@ -228,6 +240,32 @@ export default function OverViewPage() {
                   </p>
                 </CardContent>
               </Card>
+              {user.role === 'admin' && (
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      {user.role === 'admin' && 'Shipping Wallet Balance'}
+                    </CardTitle>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className="h-4 w-4 text-muted-foreground"
+                    >
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {`$${shippingLabelWalletBalance.toLocaleString()}`}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
               <div className="dashboard-areagraph col-span-4">
