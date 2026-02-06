@@ -34,7 +34,7 @@ export default function SignInViewPage() {
             backgroundRepeat: 'no-repeat'
           }}
         />
-        <div className="relative z-20 flex w-64 items-center rounded-md bg-white p-2 text-lg font-medium text-black shadow-lg">
+        <div className="relative z-20 flex w-72 items-center rounded-md bg-white p-2 text-lg font-medium text-black shadow-lg">
           {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -48,8 +48,8 @@ export default function SignInViewPage() {
             <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
           </svg> */}
           <Image src={logo} alt="mechant_logo" width={120} height={20} />
-          <span className="mb-1 text-xl font-bold text-orange-500">
-            Dashboard
+          <span className="mb-1 text-xl font-bold text-gray-500">
+            Store Manager
           </span>
         </div>
         <div className="absolute inset-0 z-20 flex items-end justify-center bg-gradient-to-t from-black/70 via-black/40 to-transparent p-10">
