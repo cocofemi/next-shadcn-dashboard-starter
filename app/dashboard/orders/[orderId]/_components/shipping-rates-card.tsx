@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -17,7 +17,7 @@ import Image from 'next/image';
 import { CurrentUserContextType, Orders, ShippingAddress } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import * as z from 'zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getShippingRates, buyLabel } from '@/utils/orders';
 import { countries } from 'countries-list';
@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2 } from 'lucide-react';
+import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
 
 interface ShippingRate {
   provider: string;
@@ -46,6 +47,7 @@ interface ShippingRate {
 interface ShippingProps {
   orderAddress: ShippingAddress;
   order: Orders;
+  onRatesLoaded: () => void;
 }
 
 const parcelSchema = z.object({
@@ -65,8 +67,15 @@ const addressSchema = parcelSchema.extend({
 
 type FormSchema = z.infer<typeof addressSchema> & z.infer<typeof parcelSchema>;
 
-export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
+export function ShippingRatesCard({
+  orderAddress,
+  order,
+  onRatesLoaded
+}: ShippingProps) {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const ratesResultRef = useRef<HTMLDivElement>(null);
+
   const [addressOption, setAddressOption] = useState('default');
   const [chooseRate, setChooseRate] = useState('');
   const [rates, setRates] = useState<ShippingRate[]>([]);
@@ -77,11 +86,17 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors }
   } = useForm<FormSchema>({
     resolver: zodResolver(
       addressOption === 'manual' ? addressSchema : parcelSchema
     )
+  });
+
+  const countryValue = useWatch({
+    control,
+    name: 'country'
   });
 
   const onSubmit = (data: any) => {
@@ -144,6 +159,15 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
           );
         }
         setRates(res?.rates);
+
+        setTimeout(() => {
+          ratesResultRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }, 200); // Increased timeout to ensure render
+
+        onRatesLoaded?.();
       })
       .catch((e) => {
         setRateError('There was a problem getting rates, please try again!');
@@ -162,6 +186,86 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
       })
       .finally(() => setLoading(false));
   };
+
+  function getContinentFromCountry(countryCode: string | number) {
+    if (!countryCode) return null;
+
+    const continentCode =
+      countries[countryCode as keyof typeof countries]?.continent;
+    if (!continentCode) return null;
+
+    const CONTINENT_LABELS = {
+      AF: 'Africa',
+      EU: 'Europe',
+      AS: 'Asia',
+      NA: 'North America',
+      SA: 'South America',
+      OC: 'Oceania',
+      AN: 'Antarctica'
+    };
+
+    return CONTINENT_LABELS[continentCode] || null;
+  }
+
+  const onPlaceChanged = () => {
+    if (!autocompleteRef.current) return;
+
+    const place = autocompleteRef.current.getPlace();
+    if (!place.address_components) return;
+
+    const components = place.address_components;
+
+    const get = (type: string) =>
+      components.find((c: { types: string | string[] }) =>
+        c.types.includes(type)
+      )?.long_name || '';
+
+    const getShort = (type: string) =>
+      components.find((c: { types: string | string[] }) =>
+        c.types.includes(type)
+      )?.short_name || '';
+
+    // City resolution (important for UK / EU)
+    const city =
+      get('locality') ||
+      get('postal_town') ||
+      get('administrative_area_level_2') ||
+      get('administrative_area_level_1');
+
+    const countryCode = getShort('country');
+    const continent = getContinentFromCountry(countryCode);
+
+    console.log('Country Code', countryCode);
+
+    const streetNumber = get('street_number');
+    const route = get('route');
+    const address = [streetNumber, route].filter(Boolean).join(' ');
+
+    // Set all form values using react-hook-form's setValue
+    setValue('address', address, { shouldValidate: true });
+    setValue('city', city, { shouldValidate: true });
+    setValue('state', get('administrative_area_level_1'), {
+      shouldValidate: true
+    });
+    setValue('zipcode', get('postal_code'), { shouldValidate: true });
+    setValue('country', countryCode, { shouldValidate: true });
+
+    // If you have a continent field
+    // setValue('continent', continent, { shouldValidate: true });
+  };
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY!,
+    libraries: ['places']
+  });
+
+  const onLoad = (autocomplete: google.maps.places.Autocomplete) => {
+    autocompleteRef.current = autocomplete;
+  };
+
+  if (!isLoaded) {
+    return <div>Loading address autocomplete…</div>;
+  }
 
   return (
     <div className="mb-5 space-y-6">
@@ -235,12 +339,21 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
                   <Label htmlFor="address" className="text-foreground">
                     Address
                   </Label>
-                  <Input
-                    {...register('address')}
-                    id="address"
-                    placeholder="Street address"
-                    className="bg-background text-foreground"
-                  />
+                  <Autocomplete
+                    onLoad={onLoad}
+                    onPlaceChanged={onPlaceChanged}
+                    options={{
+                      types: ['address'],
+                      fields: ['address_component']
+                    }}
+                  >
+                    <Input
+                      {...register('address')}
+                      id="address"
+                      placeholder="Street address"
+                      className="bg-background text-foreground"
+                    />
+                  </Autocomplete>
                   {errors.address && (
                     <p className="mt-1 text-sm text-red-500">
                       {errors.address.message}
@@ -299,7 +412,12 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
                   <Label htmlFor="country" className="text-foreground">
                     Country
                   </Label>
-                  <Select onValueChange={(val) => setValue('country', val)}>
+                  <Select
+                    value={countryValue}
+                    onValueChange={(val) =>
+                      setValue('country', val, { shouldValidate: true })
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select country" />
                     </SelectTrigger>
@@ -418,87 +536,89 @@ export function ShippingRatesCard({ orderAddress, order }: ShippingProps) {
 
       {/* Rates Results Card */}
       {rates.length > 0 && (
-        <Card className="bg-card">
-          <CardHeader>
-            <CardTitle className="text-foreground">
-              Available Shipping Rates
-            </CardTitle>
-            <CardDescription>
-              Compare rates from different carriers
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <RadioGroup
-                value={chooseRate}
-                onValueChange={setChooseRate}
-                className="space-y-3"
-              >
-                {rates.map((rate, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between rounded-lg border border-border p-4 transition-colors hover:bg-accent/50"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem
-                          value={rate.objectId}
-                          id={`r-${String(index)}`}
-                        />
-                      </div>
-                      <div className="relative flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-md bg-muted">
-                        <Image
-                          src={rate.providerImage200 || '/placeholder.svg'}
-                          alt={`${rate.provider} logo`}
-                          width={75}
-                          height={75}
-                          className="object-contain"
-                        />
-                      </div>
-                      <div>
-                        <p className="text-lg font-semibold text-foreground">
-                          {rate.provider}
-                        </p>
-                        <p className="text-sm text-green-500">
-                          {rate?.attributes[0]}
-                        </p>
-                        {/* <p className="text-sm text-green-500 text-muted-foreground">
+        <div ref={ratesResultRef}>
+          <Card className="bg-card">
+            <CardHeader>
+              <CardTitle className="text-foreground">
+                Available Shipping Rates
+              </CardTitle>
+              <CardDescription>
+                Compare rates from different carriers
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <RadioGroup
+                  value={chooseRate}
+                  onValueChange={setChooseRate}
+                  className="space-y-3"
+                >
+                  {rates.map((rate, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between rounded-lg border border-border p-4 transition-colors hover:bg-accent/50"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
+                          <RadioGroupItem
+                            value={rate.objectId}
+                            id={`r-${String(index)}`}
+                          />
+                        </div>
+                        <div className="relative flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-md bg-muted">
+                          <Image
+                            src={rate.providerImage200 || '/placeholder.svg'}
+                            alt={`${rate.provider} logo`}
+                            width={75}
+                            height={75}
+                            className="object-contain"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-lg font-semibold text-foreground">
+                            {rate.provider}
+                          </p>
+                          <p className="text-sm text-green-500">
+                            {rate?.attributes[0]}
+                          </p>
+                          {/* <p className="text-sm text-green-500 text-muted-foreground">
                           Arrives by: {rate?.arrivesBy}
                         </p> */}
-                        <p className="text-sm text-muted-foreground">
-                          {`Estimated days ~ ${rate?.estimatedDays}`}
+                          <p className="text-sm text-muted-foreground">
+                            {`Estimated days ~ ${rate?.estimatedDays}`}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {rate?.durationTerms}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-foreground">
+                          {rate.currency === 'USD' ? '$' : ''}
+                          {rate.amount}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {rate?.durationTerms}
+                          {rate.currency}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-foreground">
-                        {rate.currency === 'USD' ? '$' : ''}
-                        {rate.amount}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {rate.currency}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button
-              onClick={handleBuyLabel}
-              disabled={loading || chooseRate === ''}
-              className="w-full md:w-auto"
-              size="lg"
-            >
-              {loading ? 'Hold on...' : ' Buy shipping label'}
-              {loading && <Loader2 className="animate-spin" />}
-            </Button>
-          </CardFooter>
-        </Card>
+                  ))}
+                </RadioGroup>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                onClick={handleBuyLabel}
+                disabled={loading || chooseRate === ''}
+                className="w-full md:w-auto"
+                size="lg"
+              >
+                {loading ? 'Hold on...' : ' Buy shipping label'}
+                {loading && <Loader2 className="animate-spin" />}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       )}
     </div>
   );

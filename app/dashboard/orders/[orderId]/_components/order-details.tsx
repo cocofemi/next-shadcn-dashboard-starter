@@ -22,6 +22,7 @@ import { ShippingLabelCard } from './shipping-label-card';
 
 export default function OrderDetails() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const shippingCardRef = React.useRef<HTMLDivElement>(null);
   const search = useSearchParams();
   const id = search.get('id');
   const params = useParams();
@@ -43,7 +44,6 @@ export default function OrderDetails() {
     if (user && user?.role === 'store') {
       getStoreOrderDetails(user?.storeId, orderId).then((res) => {
         setOrder(res?.data);
-        console.log('Order', res?.data);
       });
     }
   }, [user]);
@@ -70,6 +70,15 @@ export default function OrderDetails() {
         );
     }
   }, [order]);
+
+  const handleScrollToShippingCard = () => {
+    setTimeout(() => {
+      shippingCardRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
 
   return (
     <Card className="mx-auto w-full">
@@ -364,10 +373,13 @@ export default function OrderDetails() {
               <ShippingRatesCard
                 orderAddress={order.shippingDetails[0]}
                 order={order}
+                onRatesLoaded={handleScrollToShippingCard}
               />
             )}
             {shippingLabel?.paid && (
-              <ShippingLabelCard shippingLabel={shippingLabel} />
+              <div ref={shippingCardRef}>
+                <ShippingLabelCard shippingLabel={shippingLabel} />
+              </div>
             )}
             <CompleteOrderForm />
           </>

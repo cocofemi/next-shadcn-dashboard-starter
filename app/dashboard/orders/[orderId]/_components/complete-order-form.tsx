@@ -60,8 +60,6 @@ export default function CompleteOrderForm() {
     }
   });
 
-  console.log(orderId);
-
   const [error, setError] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
 
