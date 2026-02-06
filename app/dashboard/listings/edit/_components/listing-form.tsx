@@ -808,8 +808,8 @@ export default function EditListingForm() {
                             {/* Text Content */}
                             <div className="ms-2">
                               <p className="small mb-0">
-                                Allow mehchant to generate the best rates from
-                                your address to buyers address at checkout.
+                                Allow mehchant generate the best rates from your
+                                address to buyers address at checkout.
                               </p>
                             </div>
                           </div>
