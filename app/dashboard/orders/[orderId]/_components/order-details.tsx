@@ -360,10 +360,12 @@ export default function OrderDetails() {
         order.fulfilled &&
         order.fulfilled[0].fulfilled === false && (
           <>
-            <ShippingRatesCard
-              orderAddress={order.shippingDetails[0]}
-              order={order}
-            />
+            {!shippingLabel?.paid && (
+              <ShippingRatesCard
+                orderAddress={order.shippingDetails[0]}
+                order={order}
+              />
+            )}
             {shippingLabel?.paid && (
               <ShippingLabelCard shippingLabel={shippingLabel} />
             )}
