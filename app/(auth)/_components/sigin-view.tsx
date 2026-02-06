@@ -48,9 +48,7 @@ export default function SignInViewPage() {
             <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
           </svg> */}
           <Image src={logo} alt="mechant_logo" width={120} height={20} />
-          <span className="mb-1 text-xl font-bold text-gray-500">
-            Store Manager
-          </span>
+          <span className="mb-1 text-xl text-black">Store Manager</span>
         </div>
         <div className="absolute inset-0 z-20 flex items-end justify-center bg-gradient-to-t from-black/70 via-black/40 to-transparent p-10">
           <blockquote className="space-y-2 text-white">
