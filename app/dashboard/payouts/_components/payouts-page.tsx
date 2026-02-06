@@ -100,12 +100,13 @@ export default function PayoutsPage({}: TUserListingPage) {
       runCheck();
     }
   }, [loading, user?.userId]);
+
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading title={`Payouts (${totalPayouts})`} description="" />
-          {user?.role === 'store' && payoutEnabled && (
+          {user?.role === 'store' && !payoutEnabled && (
             <HoverCard>
               <HoverCardTrigger>
                 <Button
