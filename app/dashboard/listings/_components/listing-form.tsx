@@ -579,7 +579,7 @@ export default function CreateListingForm() {
                         {/* Text Content */}
                         <div className="ms-2">
                           <p className="small mb-0">
-                            Allow mehchant to generate the best reates from your
+                            Allow mehchant to generate the best rates from your
                             address to buyers address at checkout.
                           </p>
                         </div>
