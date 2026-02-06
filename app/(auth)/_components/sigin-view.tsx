@@ -3,7 +3,9 @@ import Link from 'next/link';
 import UserAuthForm from './user-auth-form';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import warehouse from '../../../public/images/ashley-28b8xlTT5t4-unsplash.jpg';
+// import warehouse from '../../../public/images/ashley-28b8xlTT5t4-unsplash.jpg';
+import Image from 'next/image';
+import logo from '../../../public/images/mehchant_logo_v3.png';
 
 export const metadata: Metadata = {
   title: 'Authentication',
@@ -32,8 +34,8 @@ export default function SignInViewPage() {
             backgroundRepeat: 'no-repeat'
           }}
         />
-        <div className="relative z-20 flex w-48 items-center rounded-md bg-white p-2 text-lg font-medium text-black shadow-lg">
-          <svg
+        <div className="relative z-20 flex w-64 items-center rounded-md bg-white p-2 text-lg font-medium text-black shadow-lg">
+          {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -44,8 +46,11 @@ export default function SignInViewPage() {
             className="mr-2 h-6 w-6"
           >
             <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
-          </svg>
-          Mehchant Admin
+          </svg> */}
+          <Image src={logo} alt="mechant_logo" width={120} height={20} />
+          <span className="mb-1 text-xl font-bold text-orange-500">
+            Dashboard
+          </span>
         </div>
         <div className="absolute inset-0 z-20 flex items-end justify-center bg-gradient-to-t from-black/70 via-black/40 to-transparent p-10">
           <blockquote className="space-y-2 text-white">
@@ -60,9 +65,11 @@ export default function SignInViewPage() {
       <div className="flex h-full items-center p-4 lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Create an account
-            </h1>
+            <div className="lg:hidden">
+              <Image src={logo} alt="mehchant_logo" />
+            </div>
+
+            <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
             <p className="text-sm text-muted-foreground">
               Enter your email and password below to login to your account
             </p>
