@@ -222,7 +222,7 @@ export default function OrderDetails() {
                                   </p>
 
                                   <p className="text-sm text-gray-600">
-                                    ETA:{' '}
+                                    Time of Arrival:{' '}
                                     <span className="font-medium">
                                       {new Date(
                                         item.eta.earliest
