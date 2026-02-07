@@ -56,7 +56,7 @@ import { useMounted } from '@/hooks/use-mount';
 export const company = {
   name: 'Mehchant',
   logo: GalleryVerticalEnd,
-  plan: 'Store-Admin'
+  plan: 'Store-Manager'
 };
 
 export default function AppSidebar() {
