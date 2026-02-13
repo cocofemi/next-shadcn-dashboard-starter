@@ -36,7 +36,7 @@ const formSchema = z.object({
   })
 });
 
-export default function CreateListingForm() {
+export default function NewBlogForm() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const router = useRouter();
 
@@ -81,7 +81,7 @@ export default function CreateListingForm() {
       formData.append('blogImage', image);
     }
 
-    createBlog(formData, user?.token)
+    createBlog(formData)
       .then((res) => {
         console.log(res);
         setLoading(false);

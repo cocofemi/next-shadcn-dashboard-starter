@@ -11,7 +11,8 @@ export const getAllStores = async (
       headers: {
         'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -19,10 +20,10 @@ export const getAllStores = async (
   }
 };
 
-export const getStore = async (storeName: any) => {
+export const getStore = async (storeId: any) => {
   try {
     const response = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/store?storeName=${storeName}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/store?storeId=${storeId}`,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -37,11 +38,12 @@ export const getStore = async (storeName: any) => {
 export const getUserStore = async (userId: string) => {
   try {
     const response = await axios({
-      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/user/store?userId=${userId}`,
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/get/user/store/admin?userId=${userId}`,
       headers: {
         'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -72,7 +74,6 @@ export const getStoreListing = async (
 
 export const getStoreOrders = async (
   storeId: any,
-  token: string,
   page: number,
   limit: number,
   search: string = ''
@@ -81,10 +82,10 @@ export const getStoreOrders = async (
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/order/store/get/all?storeId=${storeId}&page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -92,18 +93,15 @@ export const getStoreOrders = async (
   }
 };
 
-export const storePaymentOnboarding = async (
-  storeId: string,
-  token: string
-) => {
+export const storePaymentOnboarding = async (storeId: string) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/store/payment/onboarding?storeId=${storeId}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'POST'
+      method: 'POST',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -111,18 +109,31 @@ export const storePaymentOnboarding = async (
   }
 };
 
-export const storePayoutCompleteCheck = async (
-  storeId: string,
-  token: string
-) => {
+export const storePayoutCompleteCheck = async (storeId: string) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/store/payment/onboarding/complete?storeId=${storeId}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'POST'
+      method: 'POST',
+      withCredentials: true
+    });
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updateStoreOnboardingStep = async (storeId: string) => {
+  try {
+    const response = await axios({
+      url: `${process.env.NEXT_PUBLIC_SERVER_URL}/store/onboarding/update?storeId=${storeId}`,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {

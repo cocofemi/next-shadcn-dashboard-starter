@@ -1,3 +1,4 @@
+import FloatingChatBot from '@/components/chat-bot';
 import KBar from '@/components/kbar';
 import AppSidebar from '@/components/layout/app-sidebar';
 import Header from '@/components/layout/header';
@@ -20,8 +21,9 @@ export default async function DashboardLayout({
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
   return (
     <KBar>
-      <SidebarProvider defaultOpen={defaultOpen}>
+      <SidebarProvider defaultOpen={true}>
         <AppSidebar />
+        {/* <FloatingChatBot /> */}
         <SidebarInset>
           <Header />
           {/* page main content */}

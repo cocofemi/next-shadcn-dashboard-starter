@@ -7,6 +7,7 @@ import { useTransition } from 'react';
 
 interface DataTableSearchProps {
   search: string;
+  placeholder: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   searchKey: string;
   searchQuery: string;
@@ -23,8 +24,7 @@ interface DataTableSearchProps {
 export function DataTableSearch({
   search,
   setSearch,
-  searchKey,
-  searchQuery,
+  placeholder,
   setSearchQuery
   // setPage
 }: DataTableSearchProps) {
@@ -38,7 +38,7 @@ export function DataTableSearch({
 
   return (
     <Input
-      placeholder={`Search by Id, name, email...`}
+      placeholder={placeholder}
       value={search ?? ''}
       onChange={(e) => handleSearch(e.target.value)}
       className={cn('w-full md:max-w-sm', isLoading && 'animate-pulse')}

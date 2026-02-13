@@ -16,6 +16,7 @@ import {
   Loader2,
   LogIn,
   LucideIcon,
+  Truck,
   LucideProps,
   LucideShoppingBag,
   Moon,
@@ -33,7 +34,11 @@ import {
   UserX2Icon,
   Wallet,
   X,
-  CircleDollarSign
+  CircleDollarSign,
+  List,
+  PercentCircle,
+  ShoppingBag,
+  ShoppingBasket
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -43,6 +48,7 @@ export const Icons = {
   logo: Command,
   login: LogIn,
   close: X,
+  list: List,
   product: LucideShoppingBag,
   spinner: Loader2,
   kanban: CircuitBoardIcon,
@@ -55,7 +61,9 @@ export const Icons = {
   userPen: UserPen,
   user2: UserCircle2Icon,
   media: Image,
+  truck: Truck,
   settings: Settings,
+  shopping: ShoppingBasket,
   billing: CreditCard,
   ellipsis: MoreVertical,
   add: Plus,
@@ -70,6 +78,7 @@ export const Icons = {
   laptop: Laptop,
   wallet: Wallet,
   money: CircleDollarSign,
+  discount: PercentCircle,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

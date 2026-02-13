@@ -11,7 +11,8 @@ export const login = async (email: string, password: string) => {
       data: {
         email,
         password
-      }
+      },
+      withCredentials: true
     });
     return response;
   } catch (error) {
@@ -31,7 +32,8 @@ export const googleLogin = async (token: string | undefined) => {
       data: {
         token,
         authProvider: 'google'
-      }
+      },
+      withCredentials: true
     });
     return response;
   } catch (error) {

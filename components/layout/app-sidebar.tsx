@@ -32,10 +32,8 @@ import {
 import { navItems, storenavItems, steps } from '@/constants/data';
 import {
   BadgeCheck,
-  Bell,
   ChevronRight,
   ChevronsUpDown,
-  CreditCard,
   GalleryVerticalEnd,
   LogOut
 } from 'lucide-react';
@@ -48,46 +46,54 @@ import Cookies from 'universal-cookie';
 import { CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import Joyride from 'react-joyride';
-import { getStoreListing } from '@/utils/store';
+import {
+  getStore,
+  getStoreListing,
+  updateStoreOnboardingStep
+} from '@/utils/store';
+import { useMounted } from '@/hooks/use-mount';
 
 export const company = {
   name: 'Mehchant',
   logo: GalleryVerticalEnd,
-  plan: 'Store-Admin'
+  plan: 'Store-Manager'
 };
 
 export default function AppSidebar() {
   const [runTour, setRunTour] = React.useState(false);
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const mounted = useMounted();
   const { data: session } = useSession();
   const router = useRouter();
   const cookies = new Cookies();
   const pathname = usePathname();
 
   const handleLogout = () => {
-    cookies.remove('user', { path: '/' });
+    cookies.remove('mehchant_access', { path: '/' });
+    cookies.remove('mechchant_admin_user', { path: '/' });
     router.push('/');
   };
 
   React.useEffect(() => {
-    const hasSeenTour = localStorage.getItem('storeTourCompleted');
-    if (user?.token) {
-      getStoreListing(user?.storeId, 1, 5).then((res) => {
-        if (user?.role === 'store') {
-          if (res?.data.length === 0 && !hasSeenTour) {
-            const timer = setTimeout(() => {
-              setRunTour(true);
-            }, 500);
-            return () => clearTimeout(timer);
-          }
+    if (!mounted) return;
+  });
+
+  React.useEffect(() => {
+    if (user?.userId && user?.role === 'store') {
+      getStore(user?.storeId).then((res) => {
+        if (res?.store?.onboardingComplete === false) {
+          const timer = setTimeout(() => {
+            setRunTour(true);
+          }, 500);
+          return () => clearTimeout(timer);
         }
       });
     }
-  }, [user]);
+  }, [user?.userId]);
 
-  const handleTourEnd = () => {
+  const handleTourEnd = async () => {
     setRunTour(false);
-    localStorage.setItem('storeTourCompleted', 'true');
+    await updateStoreOnboardingStep(user?.storeId);
   };
 
   return (

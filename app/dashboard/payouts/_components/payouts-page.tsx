@@ -9,10 +9,8 @@ import {
 } from '@/utils/store';
 import PaymentsTable from './payouts-tables';
 import React, { useEffect, useState } from 'react';
-import { CurrentUserContextType, Listing } from '@/@types/user';
+import { CurrentUserContextType, Listing, Payout } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
-import { getAllListing } from '@/utils/listings';
-import { getStoreListing } from '@/utils/store';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Plus, Loader2 } from 'lucide-react';
@@ -21,20 +19,24 @@ import {
   HoverCardContent,
   HoverCardTrigger
 } from '@/components/ui/hover-card';
+import { getAllPayouts, getStorePayouts } from '@/utils/payouts';
 
 type TUserListingPage = {};
 
 export default function PayoutsPage({}: TUserListingPage) {
-  const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const { user, setRefresh } = React.useContext(
+    UserContext
+  ) as CurrentUserContextType;
 
-  const [totalListings, setTotalListings] = useState<number>(0);
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [totalPayouts, setTotalPayouts] = useState<number>(0);
+  const [payouts, setPayouts] = useState<Payout[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [enableLoading, setEnableLoading] = useState<boolean>(false);
+  const [payoutEnabled, setPayoutEnabled] = useState(false);
 
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedSearch(search), 600);
@@ -46,24 +48,25 @@ export default function PayoutsPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'admin') {
+    if (user?.role === 'admin') {
       setLoading(true);
-      getAllListing(page, limit, debouncedSearch)
+
+      getAllPayouts(page, limit, debouncedSearch)
         .then((res) => {
-          setListings(res?.data);
-          setTotalListings(res?.meta.total);
+          setPayouts(res?.payouts);
+          setTotalPayouts(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
   }, [user, page, debouncedSearch]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'store') {
+    if (user?.role === 'store') {
       setLoading(true);
-      getStoreListing(user?.storeId, page, limit, debouncedSearch)
+      getStorePayouts(user?.storeId, page, limit, debouncedSearch)
         .then((res) => {
-          setListings(res?.data);
-          setTotalListings(res?.meta.total);
+          setPayouts(res?.payouts);
+          setTotalPayouts(res?.meta.total);
         })
         .finally(() => setLoading(false));
     }
@@ -71,9 +74,8 @@ export default function PayoutsPage({}: TUserListingPage) {
 
   const handleOnboarding = () => {
     setEnableLoading(true);
-    storePaymentOnboarding(user?.storeId, user?.token)
+    storePaymentOnboarding(user?.storeId)
       .then((res) => {
-        console.log(res);
         if (res?.url) window.location.href = res?.url;
         setLoading(false);
       })
@@ -81,19 +83,30 @@ export default function PayoutsPage({}: TUserListingPage) {
   };
 
   useEffect(() => {
-    if (user?.token) {
-      storePayoutCompleteCheck(user?.storeId, user?.token).then(() => {
-        console.log('Success');
-      });
-    }
+    if (user?.role === 'admin') return;
   }, [user]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (user?.role === 'admin') return;
+
+    if (user?.userId) {
+      const runCheck = async () => {
+        const completed = await storePayoutCompleteCheck(user?.storeId);
+        setPayoutEnabled(completed?.stripeOnboardingComplete);
+        setRefresh(true);
+      };
+
+      runCheck();
+    }
+  }, [loading, user?.userId]);
 
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
-          <Heading title={`Payouts (${totalListings})`} description="" />
-          {user?.role === 'store' && !user?.stripeOnboardingComplete && (
+          <Heading title={`Payouts (${totalPayouts})`} description="" />
+          {user?.role === 'store' && !payoutEnabled && (
             <HoverCard>
               <HoverCardTrigger>
                 <Button
@@ -116,8 +129,8 @@ export default function PayoutsPage({}: TUserListingPage) {
         </div>
         <Separator />
         <PaymentsTable
-          data={listings}
-          totalData={totalListings}
+          data={payouts}
+          totalData={totalPayouts}
           search={search}
           setSearch={setSearch}
           page={page}

@@ -1,7 +1,11 @@
 'use client';
 import { Listing, ListingImage } from '@/@types/user';
+import { createSlug } from '@/lib/create-slug';
 import { ColumnDef } from '@tanstack/react-table';
+import { ExternalLink } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { CellAction } from './cell-action';
 
 export const columns: ColumnDef<Listing>[] = [
   {
@@ -57,11 +61,33 @@ export const columns: ColumnDef<Listing>[] = [
   },
   {
     accessorKey: 'description',
-    header: 'DESCRIPTION'
+    header: 'DESCRIPTION',
+    cell: ({ row }) => {
+      const description = row.getValue<string>('description');
+      return <p>{`${description.substring(0, 20)}...`}</p>;
+    }
   },
+  // {
+  //   accessorKey: '_id',
+  //   header: 'VIEW',
+  //   cell: ({ row }) => {
+  //     const id = row.getValue<string>('_id');
+  //     const listingName = row.getValue<string>('listingName');
+  //     return (
+  //       <>
+  //         <a
+  //           href={`${process.env.NEXT_PUBLIC_URL}/listing/${createSlug(listingName)}?id=${id}`}
+  //           target="_blank"
+  //         >
+  //           <ExternalLink />
+  //         </a>
+  //       </>
+  //     );
+  //   }
+  // },
 
   {
-    id: 'actions'
-    //cell: ({ row }) => <CellAction data={row.original} />
+    id: 'actions',
+    cell: ({ row }) => <CellAction data={row.original} />
   }
 ];

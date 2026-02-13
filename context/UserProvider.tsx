@@ -13,18 +13,20 @@ function UserProvider({ children }: { children: React.ReactNode }) {
     lastName: '',
     email: '',
     userId: '',
-    token: '',
     role: '',
     storeId: '',
     storeName: '',
     stripeAccountId: '',
+    stripePayoutsEnabled: false,
     stripeOnboardingComplete: false,
+
     storeAddress: [],
     description: '',
     storeEmail: ''
   });
 
   const [loading, setLoading] = useState<boolean>(true);
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   useEffect(() => {
     // Load user from cookies on mount
@@ -34,7 +36,7 @@ function UserProvider({ children }: { children: React.ReactNode }) {
         const parsed = typeof data === 'string' ? JSON.parse(data) : data;
         setUser(parsed);
         //Fetch fresh user data from backend
-        getUser(parsed.userId, parsed.token)
+        getUser(parsed.userId)
           .then((res) => {
             if (res?.data) {
               const userData: IUser = {
@@ -42,11 +44,11 @@ function UserProvider({ children }: { children: React.ReactNode }) {
                 lastName: res.data.lastName,
                 email: res.data.email,
                 userId: res.data.userId,
-                token: res.data.token,
                 role: res.data.role,
                 storeId: res.data.storeId,
                 storeName: res.data.storeName,
                 stripeAccountId: res.data.stripeAccountId,
+                stripePayoutsEnabled: res.data.stripePayoutsEnabled,
                 stripeOnboardingComplete: res?.data?.stripeOnboardingComplete,
                 storeAddress: res.data.storeAddress,
                 description: res.data.description,
@@ -67,10 +69,10 @@ function UserProvider({ children }: { children: React.ReactNode }) {
         cookies.remove('mechchant_admin_user');
       }
     }
-  }, []);
+  }, [refresh]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider value={{ user, setUser, loading, setRefresh }}>
       {children}
     </UserContext.Provider>
   );

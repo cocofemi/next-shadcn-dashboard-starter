@@ -3,37 +3,20 @@
 import { AreaGraph } from './area-graph';
 import { BarGraph } from './bar-graph';
 import { PieGraph } from './pie-graph';
-import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import PageContainer from '@/components/layout/page-container';
-import { RecentSales } from './recent-sales';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getMetrics } from '@/utils/metrics';
 import { useEffect, useState } from 'react';
-import {
-  CurrentUserContextType,
-  IMetrics,
-  IStoreData,
-  Orders
-} from '@/@types/user';
+import { CurrentUserContextType, IMetrics, Orders } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import React from 'react';
 import { RecentOrders } from './recent-orders';
 import { getAllOrders } from '@/utils/orders';
 
-import {
-  getStore,
-  getStoreListing,
-  getStoreOrders,
-  getUserStore
-} from '@/utils/store';
+import { getStoreListing, getStoreOrders, getUserStore } from '@/utils/store';
+import { ReminderBanner } from '@/components/reminder-banner';
+import { getShippingWalletBalance } from '@/utils/labels';
 
 export default function OverViewPage() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
@@ -49,24 +32,35 @@ export default function OverViewPage() {
   const [totalStoreListing, setTotalStoreListing] = useState<number>(0);
   const [pendingOrders, setPendingOrders] = useState<number>(0);
 
+  const [shippingLabelWalletBalance, setShippingLabelWalletBalance] =
+    useState<number>(0);
+
   useEffect(() => {
-    if (user?.token && user.role === 'admin') {
-      getMetrics(user?.token).then((res) => {
+    if (user && user.role === 'admin') {
+      getMetrics().then((res) => {
         setMetrics(res?.data);
       });
     }
   }, [user]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'admin') {
-      getAllOrders(page, limit, user?.token).then((res) => {
+    if (user && user.role === 'admin') {
+      getAllOrders(page, limit).then((res) => {
         setOrders(res?.orders);
       });
     }
   }, [user, page]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'store') {
+    if (user && user.role === 'admin') {
+      getShippingWalletBalance().then((res) => {
+        setShippingLabelWalletBalance(res?.wallet?.balance);
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user && user.role === 'store') {
       getUserStore(user.userId).then((res) => {
         setMetrics(res?.data?.metrics);
       });
@@ -74,8 +68,8 @@ export default function OverViewPage() {
   }, [user]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'store') {
-      getStoreOrders(user?.storeId, user.token, page, limit).then((res) => {
+    if (user && user.role === 'store') {
+      getStoreOrders(user?.storeId, page, limit).then((res) => {
         setOrders(res?.data);
         setPendingOrders(res?.meta?.pending);
       });
@@ -83,16 +77,16 @@ export default function OverViewPage() {
   }, [user]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'store') {
+    if (user && user.role === 'store') {
       getStoreListing(user?.storeId, page, limit).then((res) => {
         setTotalStoreListing(res?.meta?.total);
       });
     }
-  }, [user]);
+  }, [user?.userId]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'admin') {
-      getAllOrders(page, limit, user?.token).then((res) => {
+    if (user && user.role === 'admin') {
+      getAllOrders(page, limit).then((res) => {
         setOrders(res?.orders);
       });
     }
@@ -101,6 +95,13 @@ export default function OverViewPage() {
   return (
     <PageContainer scrollable>
       <div className="space-y-2">
+        {user?.role === 'store' && user?.stripePayoutsEnabled === false && (
+          <ReminderBanner
+            title="Enable Payments For Your Store"
+            message="You haven't enabled payments for your store, without this you won't be able to create and add listings to your store. Go to the payouts tab, click on enable payouts and start the process."
+            variant="info"
+          />
+        )}
         <div className="flex items-center justify-between space-y-2">
           <h2 className="tour-end text-2xl font-bold tracking-tight">
             Hi, Welcome back 👋
@@ -110,6 +111,7 @@ export default function OverViewPage() {
             <Button>Download</Button>
           </div> */}
         </div>
+
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -230,7 +232,7 @@ export default function OverViewPage() {
                 <CardContent>
                   <div className="text-2xl font-bold">
                     {user.role === 'admin'
-                      ? `+${metrics.storesCount}`
+                      ? `+${metrics?.storesCount}`
                       : `+${pendingOrders}`}
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -238,6 +240,32 @@ export default function OverViewPage() {
                   </p>
                 </CardContent>
               </Card>
+              {user.role === 'admin' && (
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      {user.role === 'admin' && 'Shipping Wallet Balance'}
+                    </CardTitle>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      className="h-4 w-4 text-muted-foreground"
+                    >
+                      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {`$${shippingLabelWalletBalance.toLocaleString()}`}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
               <div className="dashboard-areagraph col-span-4">

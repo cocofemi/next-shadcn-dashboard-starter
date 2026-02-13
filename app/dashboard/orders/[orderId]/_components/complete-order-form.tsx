@@ -28,6 +28,7 @@ import { CurrentUserContextType } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   tracking_number: z.string().min(5, {
@@ -46,8 +47,8 @@ export default function CompleteOrderForm() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const router = useRouter();
   const searchParams = useSearchParams();
-  const id = searchParams.get('id');
   const params = useParams();
+  const { orderId } = params;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,22 +66,25 @@ export default function CompleteOrderForm() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     const { tracking_number, ship_provider, shipDate, notes } = values;
-    if (user?.token) {
+    if (user) {
       completeOrder(
-        id,
+        orderId,
         user?.storeId,
         tracking_number,
         ship_provider,
         shipDate,
-        notes,
-        user?.token
+        notes
       )
         .then((res) => {
           setLoading(false);
           console.log(res);
+          toast.success('Order completed successfully');
           router.push('/dashboard/orders');
         })
-        .catch(() => setError('There was an issue completing this order'));
+        .catch(() => {
+          setError('There was an issue completing this order');
+          toast.warning('There was a problem completing order. Try again');
+        });
     }
   }
 
@@ -138,7 +142,7 @@ export default function CompleteOrderForm() {
                 name={`shipDate`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Delivery date</FormLabel>
+                    <FormLabel>Shipping date</FormLabel>
                     <FormControl>
                       <Input
                         type="date"

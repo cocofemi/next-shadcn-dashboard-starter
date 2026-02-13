@@ -5,7 +5,7 @@ import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-fil
 import { DataTableSearch } from '@/components/ui/table/data-table-search';
 import { columns } from './columns';
 import { useEmployeeTableFilters } from './use-employee-table-filters';
-import { Listing } from '@/@types/user';
+import { Listing, Payout } from '@/@types/user';
 
 export default function PaymentsTable({
   data,
@@ -18,7 +18,7 @@ export default function PaymentsTable({
   setLimit,
   loading
 }: {
-  data: Listing[];
+  data: Payout[];
   totalData: number;
   search: string;
   page: number;
@@ -43,6 +43,7 @@ export default function PaymentsTable({
       <div className="flex flex-wrap items-center gap-4">
         <DataTableSearch
           searchKey="name"
+          placeholder="Search by order id, stripe payment Id, status ..."
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           // setPage={setPage}

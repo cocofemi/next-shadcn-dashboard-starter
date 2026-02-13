@@ -7,15 +7,23 @@ export const getBlogs = async (search: string = '') => {
   return response.data;
 };
 
-export const createBlog = async (formData: any, token: string) => {
+export const getWailtists = async () => {
+  const response = await axios({
+    url: `${process.env.NEXT_PUBLIC_SERVER_URL}/waitlist`,
+    method: 'GET',
+    withCredentials: true
+  });
+  return response.data;
+};
+
+export const createBlog = async (formData: any) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/blog/create`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+      headers: {},
       method: 'POST',
-      data: formData
+      data: formData,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -38,15 +46,14 @@ export const getBlog = async (blogId: any) => {
   }
 };
 
-export const updateBlog = async (formData: any, token: string, blogId: any) => {
+export const updateBlog = async (formData: any, blogId: any) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/blog/update?blogId=${blogId}`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
+      headers: {},
       method: 'PUT',
-      data: formData
+      data: formData,
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -54,14 +61,13 @@ export const updateBlog = async (formData: any, token: string, blogId: any) => {
   }
 };
 
-export const deleteBlog = async (blogId: any, token: string) => {
+export const deleteBlog = async (blogId: any) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/blog/delete?blogId=${blogId}`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      method: 'DELETE'
+      headers: {},
+      method: 'DELETE',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {

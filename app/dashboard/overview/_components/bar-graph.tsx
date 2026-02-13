@@ -161,8 +161,8 @@ export function BarGraph() {
 
   React.useEffect(() => {
     setLoading(true);
-    if (user?.token && user?.role === 'store') {
-      getStoreTopProducts(user?.storeId, Number(limit), user?.token)
+    if (user && user?.role === 'store') {
+      getStoreTopProducts(user?.storeId, Number(limit))
         .then((res) => {
           setLoading(false);
           setProducts(res?.data);
@@ -172,7 +172,7 @@ export function BarGraph() {
           setLoading(false);
         });
     }
-  }, [user?.token, limit]);
+  }, [, limit, user]);
 
   return (
     <>
@@ -180,7 +180,7 @@ export function BarGraph() {
         <Card>
           <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">
             <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-              <CardTitle>Bar Chart - Interactive</CardTitle>
+              <CardTitle>Top Sales</CardTitle>
               <div className="flex justify-between">
                 <CardDescription>Top Products by Revenue.</CardDescription>
                 <Select onValueChange={setLimit}>
@@ -230,7 +230,7 @@ export function BarGraph() {
                 <div className="flex h-screen items-center justify-center">
                   <Spinner />
                 </div>
-              ) : products.length > 0 ? (
+              ) : products?.length > 0 ? (
                 <BarChart data={products}>
                   <XAxis
                     dataKey="listingName"

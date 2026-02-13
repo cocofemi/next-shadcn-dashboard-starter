@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { CurrentUserContextType, Orders } from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { getAllOrders } from '@/utils/orders';
-import { getUserStore, getStoreOrders } from '@/utils/store';
+import { getStoreOrders } from '@/utils/store';
 
 type TUserListingPage = {};
 
@@ -33,9 +33,9 @@ export default function OrdersPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'admin') {
+    if (user.role === 'admin') {
       setLoading(true);
-      getAllOrders(page, limit, user?.token, debouncedSearch)
+      getAllOrders(page, limit, debouncedSearch)
         .then((res) => {
           setOrders(res?.orders);
           setTotalOrders(res?.meta.total);
@@ -45,9 +45,9 @@ export default function OrdersPage({}: TUserListingPage) {
   }, [user, page, debouncedSearch]);
 
   useEffect(() => {
-    if (user?.token && user.role === 'store') {
+    if (user.role === 'store') {
       setLoading(true);
-      getStoreOrders(user?.storeId, user.token, page, limit, debouncedSearch)
+      getStoreOrders(user?.storeId, page, limit, debouncedSearch)
         .then((res) => {
           setOrders(res?.data);
           setTotalOrders(res?.meta.total);

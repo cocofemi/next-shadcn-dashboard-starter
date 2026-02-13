@@ -38,7 +38,7 @@ export default function ListingsPage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'admin') {
+    if (user && user?.role === 'admin') {
       setLoading(true);
       getAllListing(page, limit, debouncedSearch)
         .then((res) => {
@@ -50,7 +50,7 @@ export default function ListingsPage({}: TUserListingPage) {
   }, [user, page, debouncedSearch]);
 
   useEffect(() => {
-    if (user?.token && user?.role === 'store') {
+    if (user && user?.role === 'store') {
       setLoading(true);
       getStoreListing(user?.storeId, page, limit, debouncedSearch)
         .then((res) => {
@@ -59,14 +59,14 @@ export default function ListingsPage({}: TUserListingPage) {
         })
         .finally(() => setLoading(false));
     }
-  }, [user, page, debouncedSearch]);
+  }, [user?.userId, page, debouncedSearch]);
 
   return (
     <PageContainer scrollable>
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <Heading title={`Listings (${totalListings})`} description="" />
-          {user?.role === 'store' && (
+          {user?.role === 'store' && user?.stripePayoutsEnabled === true && (
             <Link
               href={'/dashboard/listings/create'}
               className={cn(buttonVariants({ variant: 'default' }))}

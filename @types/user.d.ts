@@ -3,11 +3,11 @@ export interface IUser {
   lastName: string;
   email: string;
   userId: string;
-  token: string;
   role: string;
   storeId: string;
   storeName: string;
   stripeAccountId: string;
+  stripePayoutsEnabled: boolean;
   stripeOnboardingComplete: boolean;
   storeAddress: Address[];
   description: string;
@@ -40,6 +40,23 @@ export interface ShippingLabel {
   paid: boolean;
 }
 
+export interface ShippingBreakdown {
+  _id: string;
+  carrier: string;
+  eta: {
+    earliest: Date;
+    latest: Date;
+  };
+  shippingFee: number;
+  storeId: string;
+  shippingType: string;
+}
+
+export interface StoreBreakDown {
+  storeId: string;
+  gross: number;
+}
+
 export interface IMetrics {
   totalOrders: number;
   signupCount: number;
@@ -60,6 +77,7 @@ export interface IStoreData {
 export type CurrentUserContextType = {
   user: IUser;
   setUser: (user: IUser) => void;
+  setRefresh: (refresh: boolean) => void;
   loading: boolean;
 };
 
@@ -78,6 +96,16 @@ export interface Stores {
   storeName: string;
   location: string;
   description: string;
+}
+
+export interface ShippingLabelTransactions {
+  type: string;
+  amount: number;
+  balanceAfter: number;
+  balanceBefore: number;
+  relatedShippingLabelId: string;
+  relatedOrderId: string;
+  createdAt: string;
 }
 
 export interface Listing {
@@ -103,9 +131,42 @@ export interface Blogs {
   createdAt: string;
 }
 
+export interface Discounts {
+  _id: string;
+  code: string;
+  description: string;
+  type: string;
+  value: number;
+  minPurchase: number;
+  maxDiscount: number;
+  usageLimit: number;
+  usedCount: number;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface Waitlist {
+  _id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
 export interface ListingImage {
   _id: string;
   url: string;
+}
+
+export interface Payout {
+  _id: string;
+  storeId: string;
+  orderId: string;
+  amount: number;
+  stripeTransferId: string;
+  status: string;
+  date: string;
 }
 
 export interface Orders {
@@ -119,8 +180,22 @@ export interface Orders {
   userId: UserId;
   storeId: Store;
   shippingDetails: [ShippingAddress];
+  shippingBreakdown: [ShippingBreakdown];
+  storeBreakDown: [StoreBreakDown];
   fulfilled: [Fulfilled];
   createdAt: string;
+}
+
+export interface Labels {
+  _id: string;
+  orderId: string;
+  cost: number;
+  trackingNumber: string;
+  labelUrl: stringl;
+  status: string;
+  paid: boolean;
+  carrier: string;
+  storeId: Stores;
 }
 
 export interface UserId {

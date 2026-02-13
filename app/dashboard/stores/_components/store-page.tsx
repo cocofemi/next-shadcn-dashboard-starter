@@ -33,7 +33,7 @@ export default function StorePage({}: TUserListingPage) {
   }, [search]);
 
   useEffect(() => {
-    if (user?.token) {
+    if (user?.role === 'admin') {
       setLoading(true);
       getAllStores(page, limit, debouncedSearch)
         .then((res) => {

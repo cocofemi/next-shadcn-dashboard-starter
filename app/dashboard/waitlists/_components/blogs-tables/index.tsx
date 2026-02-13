@@ -1,0 +1,61 @@
+'use client';
+
+import { DataTable } from '@/components/ui/table/data-table';
+import { DataTableResetFilter } from '@/components/ui/table/data-table-reset-filter';
+import { DataTableSearch } from '@/components/ui/table/data-table-search';
+import { columns } from './columns';
+import { useEmployeeTableFilters } from './use-employee-table-filters';
+import { Blogs, Waitlist } from '@/@types/user';
+
+export default function BlogsTable({
+  data,
+  totalData,
+  search,
+  page,
+  limit,
+  setSearch,
+  setPage,
+  setLimit,
+  loading
+}: {
+  data: Waitlist[];
+  totalData: number;
+  search: string;
+  page: number;
+  limit: number;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setLimit: React.Dispatch<React.SetStateAction<number>>;
+  loading: boolean;
+}) {
+  const {
+    genderFilter,
+    setGenderFilter,
+    isAnyFilterActive,
+    resetFilters,
+    searchQuery,
+    // setPage,
+    setSearchQuery
+  } = useEmployeeTableFilters();
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-4">
+        <DataTableResetFilter
+          isFilterActive={isAnyFilterActive}
+          onReset={resetFilters}
+        />
+      </div>
+      <DataTable
+        columns={columns}
+        data={data}
+        totalItems={totalData}
+        page={page}
+        limit={limit}
+        setPage={setPage}
+        setLimit={setLimit}
+        loading={loading}
+      />
+    </div>
+  );
+}

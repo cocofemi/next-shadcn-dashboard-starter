@@ -1,14 +1,14 @@
 import axios from 'axios';
 
-export const getNotifications = async (storeId: any, token: string) => {
+export const getNotifications = async (storeId: any) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/notification?storeId=${storeId}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -16,19 +16,15 @@ export const getNotifications = async (storeId: any, token: string) => {
   }
 };
 
-export const markNotificationRead = async (
-  id: any,
-  storeId: string,
-  token: string
-) => {
+export const markNotificationRead = async (id: any, storeId: string) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/notification/read?id=${id}&storeId=${storeId}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'PATCH'
+      method: 'PATCH',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -36,18 +32,15 @@ export const markNotificationRead = async (
   }
 };
 
-export const markAllNotificationsAsRead = async (
-  storeId: string,
-  token: string
-) => {
+export const markAllNotificationsAsRead = async (storeId: string) => {
   try {
     const response = await axios({
       url: `${process.env.NEXT_PUBLIC_SERVER_URL}/notification/read-all?storeId=${storeId}`,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/json'
       },
-      method: 'PATCH'
+      method: 'PATCH',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {

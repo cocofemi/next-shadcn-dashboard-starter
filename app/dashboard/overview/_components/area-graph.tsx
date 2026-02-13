@@ -76,8 +76,8 @@ export function AreaGraph() {
 
   useEffect(() => {
     setLoading(true);
-    if (user?.token && user?.role === 'store') {
-      getStoreRevenue(user?.storeId, period, user?.token)
+    if (user && user?.role === 'store') {
+      getStoreRevenue(user?.storeId, period)
         .then((res) => {
           let formattedData;
           if (period === 'monthly') {
@@ -98,18 +98,18 @@ export function AreaGraph() {
           console.log('Problem fetching revenue', e);
           setLoading(false);
         });
-    } else if (user?.token) {
-      getAllRevenue(period, user?.token).then((res) => {
+    } else if (user?.role === 'admin') {
+      getAllRevenue(period).then((res) => {
         setLoading(false);
         setStoreRevenue(res?.data);
       });
     }
-  }, [user?.token, period]);
+  }, [, period, user]);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Area Chart - Stacked</CardTitle>
+        <CardTitle>Revenue</CardTitle>
 
         <div className="flex justify-between">
           <CardDescription>Showing total store revenue</CardDescription>

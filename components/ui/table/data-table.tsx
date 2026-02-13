@@ -29,13 +29,8 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useEffect } from 'react';
 import { Spinner } from '../spinner';
-import { CurrentUserContextType } from '@/@types/user';
-import { UserContext } from '@/context/UserProvider';
 import React from 'react';
 
 interface DataTableProps<
@@ -74,13 +69,10 @@ export function DataTable<
   pageSizeOptions = [10, 20, 30, 40, 50],
   page,
   limit,
-  url,
   setPage,
   setLimit,
   loading
 }: DataTableProps<TData, TValue>) {
-  const { user } = React.useContext(UserContext) as CurrentUserContextType;
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useQueryState(
     'page',
     parseAsInteger.withOptions({ shallow: false }).withDefault(1)
@@ -172,19 +164,19 @@ export function DataTable<
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
-                    onClick={() => {
-                      if (url) {
-                        const slug = row.original.storeName
-                          ? row.original.storeName
-                          : row.original.orderId
-                            ? row.original.orderId
-                            : row.original.firstname
-                              ? row.original.firstname
-                              : '';
-                        const query = `?id=${row.original._id}`; // Add query only if storeName is present
-                        router.push(`${url}/${slug}${query}`);
-                      }
-                    }}
+                    // onClick={() => {
+                    //   if (url) {
+                    //     const slug = row.original.storeName
+                    //       ? row.original.storeName
+                    //       : row.original.orderId
+                    //         ? row.original.orderId
+                    //         : row.original.firstname
+                    //           ? row.original.firstname
+                    //           : '';
+                    //     const query = `?id=${row.original._id}`; // Add query only if storeName is present
+                    //     router.push(`${url}/${slug}${query}`);
+                    //   }
+                    // }}
                     className="capitalize hover:cursor-pointer"
                   >
                     {row.getVisibleCells().map((cell) => (

@@ -51,8 +51,8 @@ export function TopStoresBarGraph() {
 
   React.useEffect(() => {
     setLoading(true);
-    if (user?.token) {
-      getTopStores(Number(days), user?.token)
+    if (user?.role === 'admin') {
+      getTopStores(Number(days))
         .then((res) => {
           setLoading(false);
           setData(res?.data);
@@ -62,7 +62,7 @@ export function TopStoresBarGraph() {
           setLoading(false);
         });
     }
-  }, [user?.token, days]);
+  }, [, days]);
 
   return (
     <Card>

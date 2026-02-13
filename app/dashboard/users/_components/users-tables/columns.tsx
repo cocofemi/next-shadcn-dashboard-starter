@@ -2,6 +2,7 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Users } from '@/@types/user';
+import { CellAction } from './cell-action';
 
 export const columns: ColumnDef<Users>[] = [
   {
@@ -48,7 +49,7 @@ export const columns: ColumnDef<Users>[] = [
   //   header: 'GENDER'
   // },
   {
-    id: 'actions'
-    //cell: ({ row }) => <CellAction data={row.original} />
+    id: 'actions',
+    cell: ({ row }) => <CellAction data={row.original} />
   }
 ];

@@ -1,17 +1,19 @@
 'use client';
 import * as React from 'react';
-import { buttonVariants } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useSearchParams, useParams } from 'next/navigation';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { Plus } from 'lucide-react';
 import {
   getOrder,
   getShippingLabel,
   getStoreOrderDetails
 } from '@/utils/orders';
-import { CurrentUserContextType, Orders, ShippingLabel } from '@/@types/user';
+import {
+  CurrentUserContextType,
+  Orders,
+  ShippingBreakdown,
+  ShippingLabel,
+  StoreBreakDown
+} from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import CompleteOrderForm from './complete-order-form';
@@ -20,30 +22,28 @@ import { ShippingLabelCard } from './shipping-label-card';
 
 export default function OrderDetails() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
+  const shippingCardRef = React.useRef<HTMLDivElement>(null);
   const search = useSearchParams();
   const id = search.get('id');
   const params = useParams();
   const { orderId } = params;
-
-  const [visible, setVisible] = React.useState<boolean>(false);
 
   const [order, setOrder] = React.useState<Orders | any>([]);
   const [shippingLabel, setShippingLabel] = React.useState<ShippingLabel>();
   const [totalPrice, setTotalPrice] = React.useState(0);
 
   React.useEffect(() => {
-    if (user?.token && user?.role === 'admin') {
-      getOrder(orderId, user?.token).then((res) => {
+    if (user && user?.role === 'admin') {
+      getOrder(orderId).then((res) => {
         setOrder(res?.data);
       });
     }
   }, [user]);
 
   React.useEffect(() => {
-    if (user?.token && user?.role === 'store') {
-      getStoreOrderDetails(user?.storeId, orderId, user?.token).then((res) => {
+    if (user && user?.role === 'store') {
+      getStoreOrderDetails(user?.storeId, orderId).then((res) => {
         setOrder(res?.data);
-        // console.log(res?.data);
       });
     }
   }, [user]);
@@ -60,8 +60,8 @@ export default function OrderDetails() {
   }, [order]); // This effect depends on `order`
 
   React.useEffect(() => {
-    if (user?.token && order?.item?.length > 0) {
-      getShippingLabel(order?._id, user?.token)
+    if (user && order?.item?.length > 0) {
+      getShippingLabel(order?._id, user?.storeId)
         .then((res) => {
           setShippingLabel(res?.data);
         })
@@ -71,10 +71,19 @@ export default function OrderDetails() {
     }
   }, [order]);
 
+  const handleScrollToShippingCard = () => {
+    setTimeout(() => {
+      shippingCardRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
+
   return (
     <Card className="mx-auto w-full">
       <CardHeader>
-        {Object.keys(order).length != 0 ? (
+        {Object?.keys(order).length != 0 ? (
           <>
             <CardTitle className="text-left text-2xl font-bold capitalize">{`Order  #${order?.orderId}`}</CardTitle>
             <div className="font-normal text-gray-500">
@@ -86,19 +95,6 @@ export default function OrderDetails() {
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
               <div className="col-span-4">
-                {user?.role === 'store' &&
-                  order.fulfilled &&
-                  order.fulfilled[0].fulfilled === false && (
-                    <div className="mb-5 flex justify-end">
-                      <Link
-                        href={''}
-                        onClick={() => setVisible((prevState) => !prevState)}
-                        className={cn(buttonVariants({ variant: 'default' }))}
-                      >
-                        <Plus className="mr-2 h-4 w-4" /> Complete Order
-                      </Link>
-                    </div>
-                  )}
                 <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
                   <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
                     <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -167,26 +163,120 @@ export default function OrderDetails() {
                         ))}
                     </tbody>
                   </table>
-                  <div className="ms-2 mt-5 flex justify-start">
-                    <ul>
-                      {user?.role === 'admin' && (
-                        <li>{`Subotal: $${order.subTotal.toFixed(2)}`}</li>
-                      )}
-                      {user?.role === 'store' && (
-                        <li>{`Subotal: $${totalPrice.toFixed(2)}`}</li>
-                      )}
-                      <li>
-                        Shipping Fee: {`$${order.shippingFee.toFixed(2)}`}
-                      </li>
-                      <li>Shipping Type: {`${order.shippingType}`}</li>
-                      {/* <li>Tax: $2.00</li> */}
-                      {user?.role === 'admin' && (
-                        <li>{`Total: $${(order.subTotal + order.shippingFee).toFixed(2)}`}</li>
-                      )}
-                      {user?.role === 'store' && (
-                        <li>{`Total: $${(totalPrice + order.shippingFee).toFixed(2)}`}</li>
-                      )}
-                    </ul>
+                  <div className="mt-10 max-w-3xl rounded-2xl border shadow-sm">
+                    <div className="border-b px-6 py-5">
+                      <h2 className="text-xl font-semibold">Order Summary</h2>
+                      <p className="text-sm text-gray-500">
+                        Breakdown of items, shipping, and totals
+                      </p>
+                    </div>
+
+                    <div className="space-y-8 px-6 py-6">
+                      {/* Listing Price */}
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">Listing Price</p>
+
+                        {user?.role === 'admin' && (
+                          <p className="text-lg font-semibold">
+                            ${order.subTotal.toFixed(2)}
+                          </p>
+                        )}
+
+                        {user?.role === 'store' && (
+                          <p className="text-lg font-semibold">
+                            ${totalPrice.toFixed(2)}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Divider */}
+                      <div className="border-t" />
+
+                      {/* Shipping Breakdown */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">
+                          Shipping Breakdown
+                        </h3>
+
+                        <div className="space-y-4">
+                          {order?.shippingBreakDown.map(
+                            (item: ShippingBreakdown) => (
+                              <div
+                                key={item._id}
+                                className="flex flex-col gap-6 rounded-xl border bg-gray-50 p-5 sm:flex-row sm:items-center sm:justify-between"
+                              >
+                                {/* Left */}
+                                <div className="space-y-1">
+                                  <p className="text-sm font-medium text-gray-600">
+                                    Carrier:{' '}
+                                    <span className="font-semibold">
+                                      {item.carrier}
+                                    </span>
+                                  </p>
+
+                                  <p className="text-sm text-gray-600">
+                                    Shipping type:{' '}
+                                    <span className="font-medium capitalize text-gray-600">
+                                      Standard
+                                    </span>
+                                  </p>
+
+                                  <p className="text-sm text-gray-600">
+                                    Time of Arrival:{' '}
+                                    <span className="font-medium">
+                                      {new Date(
+                                        item.eta.earliest
+                                      ).toLocaleDateString()}{' '}
+                                      –{' '}
+                                      {new Date(
+                                        item.eta.latest
+                                      ).toLocaleDateString()}
+                                    </span>
+                                  </p>
+                                </div>
+
+                                {/* Right */}
+                                <div className="flex items-center justify-between gap-6">
+                                  <div className="text-right">
+                                    <p className="text-sm text-gray-600">
+                                      Shipping Fee
+                                    </p>
+                                    <p className="text-lg font-semibold text-gray-600">
+                                      ${item.shippingFee.toFixed(2)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="border-t" />
+
+                      {/* Store Totals */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Store Totals</h3>
+
+                        <div className="space-y-3">
+                          {order?.storeBreakDown.map((item: StoreBreakDown) => (
+                            <div
+                              key={item.storeId}
+                              className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3"
+                            >
+                              <p className="text-sm font-medium text-gray-700">
+                                Gross
+                              </p>
+
+                              <p className="text-lg font-semibold text-gray-900">
+                                ${Number(item.gross).toFixed(2)}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -275,18 +365,25 @@ export default function OrderDetails() {
           <CardTitle>Loading...</CardTitle>
         )}
       </CardHeader>
-      {visible && (
-        <>
-          <ShippingRatesCard
-            orderAddress={order.shippingDetails[0]}
-            order={order}
-          />
-          {shippingLabel?.paid && (
-            <ShippingLabelCard shippingLabel={shippingLabel} />
-          )}
-          <CompleteOrderForm />
-        </>
-      )}
+      {user?.role === 'store' &&
+        order.fulfilled &&
+        order.fulfilled[0].fulfilled === false && (
+          <>
+            {!shippingLabel?.paid && (
+              <ShippingRatesCard
+                orderAddress={order.shippingDetails[0]}
+                order={order}
+                onRatesLoaded={handleScrollToShippingCard}
+              />
+            )}
+            {shippingLabel?.paid && (
+              <div ref={shippingCardRef}>
+                <ShippingLabelCard shippingLabel={shippingLabel} />
+              </div>
+            )}
+            <CompleteOrderForm />
+          </>
+        )}
     </Card>
   );
 }
