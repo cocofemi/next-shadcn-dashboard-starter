@@ -54,7 +54,11 @@ export default function OverViewPage() {
   useEffect(() => {
     if (user && user.role === 'admin') {
       getShippingWalletBalance().then((res) => {
-        setShippingLabelWalletBalance(res?.wallet?.balance);
+        if (res?.wallet === null) {
+          setShippingLabelWalletBalance(0);
+        } else {
+          setShippingLabelWalletBalance(res?.wallet?.balance);
+        }
       });
     }
   }, [user]);
@@ -261,7 +265,7 @@ export default function OverViewPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {`$${shippingLabelWalletBalance.toLocaleString()}`}
+                      {`$${shippingLabelWalletBalance?.toLocaleString()}`}
                     </div>
                   </CardContent>
                 </Card>
