@@ -25,7 +25,8 @@ export function UserNav() {
   const { data: session } = useSession();
 
   const handleLogout = () => {
-    cookies.remove('user', { path: '/' });
+    cookies.remove('mehchant_access', { path: '/' });
+    cookies.remove('mechchant_admin_user', { path: '/' });
     router.push('/');
   };
 

@@ -8,6 +8,7 @@ import {
   LogOut,
   Sparkles
 } from 'lucide-react';
+import Cookies from 'universal-cookie';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -25,6 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '@/components/ui/sidebar';
+import { useRouter } from 'next/navigation';
 
 export function NavUser({
   user
@@ -35,7 +37,15 @@ export function NavUser({
     avatar: string;
   };
 }) {
+  const router = useRouter();
+  const cookies = new Cookies();
   const { isMobile } = useSidebar();
+
+  const handleLogout = () => {
+    cookies.remove('mehchant_access', { path: '/' });
+    cookies.remove('mechchant_admin_user', { path: '/' });
+    router.push('/');
+  };
 
   return (
     <SidebarMenu>
@@ -98,7 +108,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
