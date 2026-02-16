@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -14,12 +14,21 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import Image from 'next/image';
-import { CurrentUserContextType, Orders, ShippingAddress } from '@/@types/user';
+import {
+  CurrentUserContextType,
+  OrderItem,
+  Orders,
+  ShippingAddress
+} from '@/@types/user';
 import { UserContext } from '@/context/UserProvider';
 import * as z from 'zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getShippingRates, buyLabel } from '@/utils/orders';
+import {
+  getShippingRates,
+  buyLabel,
+  getOrdersMaxDimensions
+} from '@/utils/orders';
 import { countries } from 'countries-list';
 import {
   Select,
@@ -31,6 +40,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2 } from 'lucide-react';
 import { Autocomplete, useJsApiLoader } from '@react-google-maps/api';
+import { getListing } from '@/utils/listings';
 
 interface ShippingRate {
   provider: string;
@@ -98,6 +108,26 @@ export function ShippingRatesCard({
     control,
     name: 'country'
   });
+
+  useEffect(() => {
+    if (order) {
+      const fetchDimensions = async () => {
+        try {
+          const res = await getOrdersMaxDimensions(
+            order?.item as OrderItem[],
+            getListing
+          );
+          setValue('weight', res.weight.toString(), { shouldValidate: true });
+          setValue('length', res.length.toString(), { shouldValidate: true });
+          setValue('width', res.width.toString(), { shouldValidate: true });
+          setValue('height', res.height.toString(), { shouldValidate: true });
+        } catch (e) {
+          console.log(e);
+        }
+      };
+      fetchDimensions();
+    }
+  }, [order]);
 
   const onSubmit = (data: any) => {
     setRatesLoading(true);

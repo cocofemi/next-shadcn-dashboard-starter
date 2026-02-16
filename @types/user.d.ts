@@ -122,6 +122,13 @@ export interface Listing {
   createdAt: string;
 }
 
+export interface ShippingSpec {
+  width: number;
+  length: number;
+  height: number;
+  weight: number;
+}
+
 export interface Blogs {
   _id: string;
   title: string;
@@ -210,6 +217,7 @@ export type Store = {
 };
 
 export interface OrderItem {
+  listingId: string;
   price: number;
   quantity: number;
   storeId: string;
