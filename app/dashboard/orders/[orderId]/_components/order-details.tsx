@@ -322,12 +322,12 @@ export default function OrderDetails() {
                   </CardContent>
                   <CardHeader>
                     <CardTitle>Shipping Address</CardTitle>
-                    <p className="text-muted-foreground">{`${order.shippingDetails[0].line1}`}</p>
+                    <p className="text-muted-foreground">{`${order.shippingDetails[0]?.line1}`}</p>
                     <p className="text-muted-foreground">
-                      {order.shippingDetails[0].line2 &&
-                        `${order.shippingDetails[0].line2}`}
+                      {order.shippingDetails[0]?.line2 &&
+                        `${order.shippingDetails[0]?.line2}`}
                     </p>
-                    <p className="text-muted-foreground">{`${order.shippingDetails[0].postal_code} ${order.shippingDetails[0].city} `}</p>
+                    <p className="text-muted-foreground">{`${order.shippingDetails[0]?.postal_code} ${order.shippingDetails[0]?.city} `}</p>
                     <p className="text-muted-foreground">{`${order.shippingDetails[0].country}`}</p>
                   </CardHeader>
                   {order.fulfilled && order.fulfilled[0].fulfilled != false && (
