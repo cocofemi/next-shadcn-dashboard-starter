@@ -38,7 +38,15 @@ export const columns: ColumnDef<Users>[] = [
   },
   {
     accessorKey: 'email',
-    header: 'EMAIL'
+    header: 'EMAIL',
+    cell: ({ row }) => {
+      const email = row.getValue<boolean>('email');
+      return (
+        <div>
+          <p className="lowercase">{email}</p>
+        </div>
+      );
+    }
   },
   {
     accessorKey: 'phoneNumber',
