@@ -693,7 +693,7 @@ export default function EditListingForm() {
 
                 <div className="space-y-4">
                   <Label className="text-lg font-semibold text-foreground">
-                    Enter Parcel Specs
+                    Enter Parcel Specification
                   </Label>
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                     <div className="space-y-2">
