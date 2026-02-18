@@ -12,6 +12,7 @@ import { getStore } from '@/utils/store';
 import { useSearchParams, useParams } from 'next/navigation';
 import { useState } from 'react';
 import { Spinner } from '@/components/ui/spinner';
+import { IdCard } from 'lucide-react';
 
 interface IStore {
   _id: string;
@@ -26,8 +27,6 @@ interface IStore {
 export default function StoreDetails() {
   const search = useSearchParams();
   const id = search.get('id');
-  const params = useParams();
-  const { storeId } = params;
   const [loading, setLoading] = useState<boolean>(false);
 
   const [store, setStore] = React.useState<IStore>({
@@ -42,8 +41,9 @@ export default function StoreDetails() {
 
   React.useEffect(() => {
     setLoading(true);
-    getStore(storeId)
+    getStore(id)
       .then((res) => {
+        console.log('store details', res);
         setLoading(false);
         setStore(res?.store);
       })

@@ -27,7 +27,8 @@ export const getStore = async (storeId: any) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      method: 'GET'
+      method: 'GET',
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
