@@ -83,6 +83,64 @@ const continents = [
   'South America'
 ];
 
+export const PRODUCT_CATEGORIES = [
+  { value: 'art', label: 'Art' },
+  { value: 'home-garden', label: 'Home & Garden' },
+  { value: 'clothing', label: 'Clothing' },
+  { value: 'fashion', label: 'Fashion Accessories' },
+  { value: 'digital', label: 'Digital Assets' },
+  { value: 'music', label: 'Music e.g vinyl, cds' },
+  { value: 'collections', label: 'Rare Collections' },
+  { value: 'furniture', label: 'Furniture' },
+  { value: 'sports-entertainment', label: 'Sports & Entertainment' },
+  { value: 'jewelry-eyewear-watches', label: 'Jewelry, Eyewear & Watches' },
+  { value: 'apparel-accessories', label: 'Apparel & Accessories' },
+  { value: 'consumer-electronics', label: 'Consumer Electronics' },
+  { value: 'beauty', label: 'Beauty' },
+  { value: 'vehicle-parts-accessories', label: 'Vehicle Parts & Accessories' },
+  { value: 'commercial-equipment', label: 'Commercial Equipment' },
+  { value: 'construction-real-estate', label: 'Construction & Real Estate' },
+  {
+    value: 'vehicle-accessories-electronics',
+    label: 'Vehicle Accessories & Electronics'
+  },
+  { value: 'sportswear-outdoor', label: 'Sportswear & Outdoor Accessories' },
+  { value: 'vehicles-transportation', label: 'Vehicles & Transportation' },
+  { value: 'gifts-crafts', label: 'Gifts & Crafts' },
+  { value: 'mother-kids-toys', label: 'Mother, Kids & Toys' },
+  { value: 'pet-supplies', label: 'Pet Supplies' },
+  { value: 'tools-hardware', label: 'Tools & Hardware' },
+  { value: 'lights-lighting', label: 'Lights & Lighting' },
+  { value: 'home-appliances', label: 'Home Appliances' },
+  { value: 'shoes-accessories', label: 'Shoes & Accessories' },
+  { value: 'industrial-machinery', label: 'Industrial Machinery' },
+  { value: 'healthcare', label: 'Healthcare' },
+  { value: 'luggage-bags-cases', label: 'Luggage, Bags & Cases' },
+  { value: 'packaging-printing', label: 'Packaging & Printing' },
+  {
+    value: 'construction-building-machinery',
+    label: 'Construction & Building Machinery'
+  },
+  { value: 'renewable-energy', label: 'Renewable Energy' },
+  { value: 'safety', label: 'Safety' },
+  {
+    value: 'electrical-equipment-supplies',
+    label: 'Electrical Equipment & Supplies'
+  },
+  {
+    value: 'personal-care-cleaning',
+    label: 'Personal Care & Household Cleaning'
+  },
+  { value: 'material-handling', label: 'Material Handling' },
+  { value: 'school-office-supplies', label: 'School & Office Supplies' },
+  { value: 'medical-devices-supplies', label: 'Medical Devices & Supplies' },
+  { value: 'security', label: 'Security' },
+  { value: 'fabric-textile', label: 'Fabric & Textile Raw Material' },
+  { value: 'testing-instruments', label: 'Testing Instruments & Equipment' },
+  { value: 'rubber-plastics', label: 'Rubber & Plastics' },
+  { value: 'metal-alloys', label: 'Metal & Alloys' }
+];
+
 export default function CreateListingForm() {
   const { user } = React.useContext(UserContext) as CurrentUserContextType;
   const router = useRouter();
@@ -284,20 +342,15 @@ export default function CreateListingForm() {
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="art">Art</SelectItem>
-                        <SelectItem value="clothing">Clothing</SelectItem>
-                        <SelectItem value="fashion">
-                          Fashion Accessories
-                        </SelectItem>
-                        <SelectItem value="digital">Digital Assets</SelectItem>
-                        <SelectItem value="beauty">Beauty</SelectItem>
-                        <SelectItem value="music">
-                          Music e.g vinyl, cds
-                        </SelectItem>
-                        <SelectItem value="collections">
-                          Rare Collections
-                        </SelectItem>
+                      <SelectContent className="max-h-60 overflow-y-auto">
+                        {PRODUCT_CATEGORIES.map((category) => (
+                          <SelectItem
+                            key={category.value}
+                            value={category.value}
+                          >
+                            {category.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -28,7 +28,9 @@ export function NoStoreWarning() {
             </Button>
 
             <Button asChild variant="outline" className="w-full sm:w-auto">
-              <Link href="/">Back to marketplace</Link>
+              <Link href={`${process.env.NEXT_PUBLIC_URL}`}>
+                Back to marketplace
+              </Link>
             </Button>
           </div>
 

@@ -40,6 +40,7 @@ import MDEditor from '@uiw/react-md-editor';
 import { Spinner } from '@/components/ui/spinner';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { PRODUCT_CATEGORIES } from '../../_components/listing-form';
 
 interface IListing {
   name: string;
@@ -413,23 +414,15 @@ export default function EditListingForm() {
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value="clothing">Clothing</SelectItem>
-                        <SelectItem value="fashion">
-                          Fashion Accessories
-                        </SelectItem>
-                        <SelectItem value="digital-assets">
-                          Digital Assets
-                        </SelectItem>
-                        <SelectItem value="beauty">Beauty</SelectItem>
-                        <SelectItem value="music">
-                          Music e.g vinyl, cds
-                        </SelectItem>
-                        <SelectItem value="collections">
-                          Rare Collections
-                        </SelectItem>
-                        {/* <SelectItem value="japan">Japan</SelectItem>
-                        <SelectItem value="brazil">Brazil</SelectItem> */}
+                      <SelectContent className="max-h-60 overflow-y-auto">
+                        {PRODUCT_CATEGORIES.map((category) => (
+                          <SelectItem
+                            key={category.value}
+                            value={category.value}
+                          >
+                            {category.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
